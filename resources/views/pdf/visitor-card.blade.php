@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Visitor Cards - {{ $apartment->name }} - {{ $month }}</title>
+    <style>
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #1e293b;
+            line-height: 1.5;
+            font-size: 11px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4f46e5;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            color: #4f46e5;
+            text-transform: uppercase;
+            font-size: 18px;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        .header p {
+            font-weight: bold;
+            color: #64748b;
+            margin: 5px 0 0;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .info-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 0.5px;
+        }
+        .info-table td {
+            padding: 10px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: top;
+        }
+        .card-container {
+            page-break-inside: avoid;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            font-weight: bold;
+            color: #4f46e5;
+            border-bottom: 1px dashed #e2e8f0;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .guest-details {
+            display: table;
+            width: 100%;
+        }
+        .detail-row {
+            display: table-row;
+        }
+        .detail-label {
+            display: table-cell;
+            font-weight: bold;
+            color: #64748b;
+            width: 30%;
+            padding-bottom: 5px;
+        }
+        .detail-value {
+            display: table-cell;
+            color: #1e293b;
+            padding-bottom: 5px;
+        }
+        .footer {
+            margin-top: 50px;
+            font-size: 8px;
+            color: #94a3b8;
+            text-align: center;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Monthly Visitor Report</h1>
+        <p>{{ $apartment->name }} — {{ \Carbon\Carbon::parse($month)->format('F Y') }}</p>
+    </div>
+
+    @foreach($bookings as $booking)
+        <div class="card-container">
+            <div class="card-header">
+                REGISTRATION CARD #{{ $booking->id }}
+                <span style="float: right; color: #64748b; font-size: 9px;">Stay: {{ $booking->check_in_date->format('d M') }} - {{ $booking->check_out_date->format('d M Y') }}</span>
+            </div>
+            
+            <div class="guest-details">
+                <div class="detail-row">
+                    <div class="detail-label">Full Name:</div>
+                    <div class="detail-value">{{ $booking->guest_name }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Email:</div>
+                    <div class="detail-value">{{ $booking->guest_email }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Stay Duration:</div>
+                    <div class="detail-value">{{ $booking->check_in_date->diffInDays($booking->check_out_date) }} Nights</div>
+                </div>
+                
+                @if($booking->checkin)
+                <div class="detail-row">
+                    <div class="detail-label">Date of Birth:</div>
+                    <div class="detail-value">{{ $booking->checkin->dob ?? 'N/A' }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Nationality:</div>
+                    <div class="detail-value">{{ $booking->checkin->nationality ?? 'N/A' }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Document:</div>
+                    <div class="detail-value">{{ $booking->checkin->document_type ?? 'ID/Passport' }} #{{ $booking->checkin->document_number ?? '...' }}</div>
+                </div>
+                @else
+                <div class="detail-row">
+                    <div class="detail-label">Verification:</div>
+                    <div class="detail-value" style="color: #ef4444;">Digital Form Pending</div>
+                </div>
+                @endif
+            </div>
+        </div>
+    @endforeach
+
+    <div class="footer">
+        Generated by Apartments24 Management System on {{ date('d.m.Y H:i') }}<br>
+        All data processed according to GDPR and local hospitality regulations.
+    </div>
+</body>
+</html>
