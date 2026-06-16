@@ -4,11 +4,11 @@ import {
     ArrowLeft,
     Save,
     Receipt,
-    DollarSign,
+    Euro,
     Calendar,
     FileText,
     Building2,
-    CheckCircle2,
+    CheckCircle,
     AlertCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -111,10 +111,10 @@ export default function Create({ auth, apartments }) {
                             {/* Amount */}
                             <div className="space-y-4">
                                 <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                                    <DollarSign className="w-4 h-4" /> Amount Paid
+                                    <Euro className="w-4 h-4" /> Amount Paid
                                 </label>
                                 <div className="relative">
-                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-black">$</span>
+                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-black">€</span>
                                     <input
                                         type="number"
                                         step="0.01"
@@ -136,7 +136,7 @@ export default function Create({ auth, apartments }) {
                                 </label>
                                 <div className="border-2 border-dashed border-slate-100 rounded-2xl p-4 flex items-center gap-4 bg-slate-50/50">
                                     <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-slate-100 shadow-sm">
-                                        <CheckCircle2 className="w-5 h-5 text-slate-200" />
+                                        <CheckCircle className="w-5 h-5 text-slate-200" />
                                     </div>
                                     <p className="text-[10px] font-bold text-slate-400">Upload receipt during verification</p>
                                 </div>

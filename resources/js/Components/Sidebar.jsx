@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import {
     LayoutDashboard,
     Building2,
@@ -100,6 +100,18 @@ export default function Sidebar() {
                             label="Users & Roles"
                             active={route().current('admin.users.*')}
                         />
+                        <SidebarItem
+                            href={route('admin.message-templates.index')}
+                            icon={Shield}
+                            label="Automatic Messages"
+                            active={route().current('admin.message-templates.*')}
+                        />
+                        <SidebarItem
+                            href={route('admin.settings.index')}
+                            icon={Settings}
+                            label="Company Settings"
+                            active={route().current('admin.settings.*')}
+                        />
                     </>
                 )}
 
@@ -132,9 +144,20 @@ export default function Sidebar() {
                     </div>
                     <div className="min-w-0">
                         <h5 className="text-slate-900 text-xs font-black truncate">{user.name}</h5>
-                        <p className="text-brand-orange text-[10px] font-black uppercase tracking-widest">{user.user_type}</p>
+                        <p className="text-brand-orange text-[10px] font-black uppercase tracking-widest">
+                            {auth.impersonated_by ? 'Owner (Impersonating)' : user.user_type}
+                        </p>
                     </div>
                 </div>
+
+                {auth.impersonated_by && (
+                    <button
+                        onClick={() => router.post(route('admin.impersonate.leave'))}
+                        className="w-full mb-4 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all"
+                    >
+                        End Impersonation
+                    </button>
+                )}
 
                 <div className="space-y-1">
                     <Link

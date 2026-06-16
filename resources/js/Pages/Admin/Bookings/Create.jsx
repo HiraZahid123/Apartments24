@@ -1,11 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Save, Calendar, User, Mail, Building2, Users, Globe, DollarSign, Info } from 'lucide-react';
+import { ArrowLeft, Save, Calendar, User, Mail, Building2, Users, Globe, Euro, Info } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 export default function Create({ auth, apartments }) {
     const { data, setData, post, processing, errors } = useForm({
-        apartment_id: '',
+        apartment_ids: [],
         guest_name: '',
         guest_email: '',
         check_in_date: '',
@@ -13,8 +13,34 @@ export default function Create({ auth, apartments }) {
         number_of_guests: 1,
         preferred_language: 'en',
         total_price: '',
+        service_fee: '',
         status: 'confirmed',
     });
+
+    const selectedApartment = data.apartment_ids.length > 0 
+        ? apartments.find(a => a.id === data.apartment_ids[0]) 
+        : null;
+    const ownerPercentage = selectedApartment ? parseFloat(selectedApartment.owner_revenue_percentage) / 100 : 0.65;
+    const adminPercentage = 1 - ownerPercentage;
+
+    const calculateFinancials = (total, fee, ownerPct) => {
+        const t = parseFloat(total) || 0;
+        const f = parseFloat(fee) || 0;
+
+        const priceAfterVat = t / 1.13;
+        const netIncome = priceAfterVat - f;
+        const ownerShare = netIncome * ownerPct;
+        const adminCommission = netIncome * (1 - ownerPct);
+
+        return {
+            priceAfterVat: priceAfterVat.toFixed(2),
+            netIncome: netIncome.toFixed(2),
+            ownerShare: ownerShare.toFixed(2),
+            adminCommission: adminCommission.toFixed(2)
+        };
+    };
+
+    const financials = calculateFinancials(data.total_price, data.service_fee, ownerPercentage);
 
     const submit = (e) => {
         e.preventDefault();
@@ -26,14 +52,19 @@ export default function Create({ auth, apartments }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-extrabold text-3xl text-slate-900 tracking-tight leading-none italic uppercase">New Reservation</h2>}
+            header={
+                <>
+                    <h2 className="font-extrabold text-3xl text-slate-900 tracking-tight leading-none italic uppercase lg:block hidden">New Reservation</h2>
+                    <h2 className="lg:hidden text-center text-xl font-black text-slate-900">New booking</h2>
+                </>
+            }
         >
             <Head title="Create Booking | Apartments24" />
 
-            <div className="py-6 max-w-5xl">
+            <div className="py-6 max-w-5xl pb-32">
                 <Link
                     href={route('admin.bookings.index')}
-                    className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors mb-8 group"
+                    className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors mb-8 group lg:flex hidden"
                 >
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     Back to Reservations
@@ -151,27 +182,40 @@ export default function Create({ auth, apartments }) {
                     <div className="space-y-8">
                         {/* Property Selection */}
                         <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8">
-                            <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 block">Assign Property</label>
+                            <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 block">Assign Properties (Multi-select)</label>
                             <div className="space-y-4">
-                                {apartments.map(apt => (
-                                    <button
-                                        key={apt.id}
-                                        type="button"
-                                        onClick={() => setData('apartment_id', apt.id)}
-                                        className={`w-full p-4 rounded-2xl border flex items-center gap-3 transition-all ${data.apartment_id === apt.id ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-white border-slate-100 text-slate-600 hover:border-indigo-200'}`}
-                                    >
-                                        <Building2 className={`w-5 h-5 ${data.apartment_id === apt.id ? 'text-indigo-200' : 'text-slate-300'}`} />
-                                        <span className="font-black text-sm text-left leading-tight">{apt.name}</span>
-                                    </button>
-                                ))}
+                                {apartments.map(apt => {
+                                    const isSelected = data.apartment_ids.includes(apt.id);
+                                    return (
+                                        <button
+                                            key={apt.id}
+                                            type="button"
+                                            onClick={() => {
+                                                const newIds = isSelected
+                                                    ? data.apartment_ids.filter(id => id !== apt.id)
+                                                    : [...data.apartment_ids, apt.id];
+                                                setData('apartment_ids', newIds);
+                                            }}
+                                            className={`w-full p-4 rounded-2xl border flex items-center gap-3 transition-all ${isSelected ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-white border-slate-100 text-slate-600 hover:border-indigo-200'}`}
+                                        >
+                                            <Building2 className={`w-5 h-5 ${isSelected ? 'text-indigo-200' : 'text-slate-300'}`} />
+                                            <span className="font-black text-sm text-left leading-tight">{apt.name}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
-                            {errors.apartment_id && <p className="text-rose-500 text-xs font-bold mt-2">{errors.apartment_id}</p>}
+                            {errors.apartment_ids && <p className="text-rose-500 text-xs font-bold mt-2">{errors.apartment_ids}</p>}
+                            {data.apartment_ids.length > 0 && (
+                                <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mt-4">
+                                    {data.apartment_ids.length} property(s) selected
+                                </p>
+                            )}
                         </div>
 
                         {/* Financials & Status */}
                         <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-xl shadow-slate-200">
                             <div className="flex items-center gap-3 mb-8">
-                                <DollarSign className="w-5 h-5 text-indigo-400" />
+                                <Euro className="w-5 h-5 text-indigo-400" />
                                 <h4 className="text-sm font-black uppercase tracking-widest text-indigo-400">Financial Summary</h4>
                             </div>
 
@@ -179,7 +223,7 @@ export default function Create({ auth, apartments }) {
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Stay Price (VAT Incl.)</label>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">€</span>
                                         <input
                                             type="number"
                                             step="0.01"
@@ -190,6 +234,37 @@ export default function Create({ auth, apartments }) {
                                         />
                                     </div>
                                     {errors.total_price && <p className="text-rose-400 text-xs font-bold">{errors.total_price}</p>}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Service Fee (Booking.com/Airbnb) - Optional</label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">€</span>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={data.service_fee}
+                                            onChange={e => setData('service_fee', e.target.value)}
+                                            className="w-full pl-8 pr-4 py-3 bg-white/5 border-none rounded-xl focus:ring-2 focus:ring-rose-500 transition-all font-black text-white"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                    {errors.service_fee && <p className="text-rose-400 text-xs font-bold">{errors.service_fee}</p>}
+                                </div>
+
+                                <div className="space-y-3 p-4 bg-white/5 rounded-2xl border border-white/5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Price after VAT (13%)</span>
+                                        <span className="text-sm font-black text-indigo-300">
+                                            €{financials.priceAfterVat}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Net Income (VAT Excl. - Fee)</span>
+                                        <span className="text-sm font-black text-emerald-300">
+                                            €{financials.netIncome}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-2">
@@ -206,16 +281,25 @@ export default function Create({ auth, apartments }) {
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-white/10">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs font-bold text-slate-400">Estimated Owner Share (65%)</span>
+                            <div className="pt-6 border-t border-white/10 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex flex-col">
+                                        <span className="text-xs font-bold text-slate-400 leading-none mb-1">Owner Share ({(ownerPercentage * 100).toFixed(0)}%)</span>
+                                        <span className="text-[9px] text-slate-500 font-medium">Net Income × {ownerPercentage.toFixed(2)}</span>
+                                    </div>
                                     <span className="text-sm font-black text-emerald-400">
-                                        ${(data.total_price * 0.65).toFixed(2)}
+                                        €{financials.ownerShare}
                                     </span>
                                 </div>
-                                <p className="text-[9px] text-slate-500 leading-relaxed">
-                                    Final net revenue based on VAT-exclusive price will be calculated upon save.
-                                </p>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex flex-col">
+                                        <span className="text-xs font-bold text-slate-400 leading-none mb-1">Admin Commission ({(adminPercentage * 100).toFixed(0)}%)</span>
+                                        <span className="text-[9px] text-slate-500 font-medium">Net Income × {adminPercentage.toFixed(2)}</span>
+                                    </div>
+                                    <span className="text-sm font-black text-indigo-400">
+                                        €{financials.adminCommission}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -225,7 +309,7 @@ export default function Create({ auth, apartments }) {
                             className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all hover:-translate-y-1 flex items-center justify-center gap-3 disabled:opacity-50"
                         >
                             <Save className="w-5 h-5" />
-                            Finalize Booking
+                            Create Booking
                         </button>
                     </div>
                 </form>

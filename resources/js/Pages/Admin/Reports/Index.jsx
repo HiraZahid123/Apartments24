@@ -65,7 +65,7 @@ export default function Index({ financials, chartData, topApartments, filters })
                 yAxisID: 'y',
             },
             {
-                label: 'Admin Commission (35%)',
+                label: 'Admin Commission',
                 data: chartData.map(d => d.admin_commission),
                 borderColor: '#10b981', // Emerald
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -103,7 +103,7 @@ export default function Index({ financials, chartData, topApartments, filters })
                 display: true,
                 position: 'left',
                 grid: { borderDash: [4, 4], color: '#f1f5f9' },
-                ticks: { callback: (value) => '$' + value }
+                ticks: { callback: (value) => '€' + value }
             }
         }
     };
@@ -121,7 +121,7 @@ export default function Index({ financials, chartData, topApartments, filters })
         </div>
     );
 
-    const currency = (amount) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
+    const currency = (amount) => new Intl.NumberFormat('en-DE', { style: 'currency', currency: 'EUR' }).format(amount || 0);
 
     return (
         <AuthenticatedLayout
@@ -174,7 +174,7 @@ export default function Index({ financials, chartData, topApartments, filters })
                         bg="bg-indigo-50"
                     />
                     <StatCard
-                        title="Admin Commission (35%)"
+                        title="Admin Commission"
                         value={currency(financials.admin_commission)}
                         subtext="Net income for platform"
                         icon={Wallet}
@@ -182,7 +182,7 @@ export default function Index({ financials, chartData, topApartments, filters })
                         bg="bg-emerald-50"
                     />
                     <StatCard
-                        title="Owner Payout (65%)"
+                        title="Owner Payout"
                         value={currency(financials.owner_share)}
                         subtext="To be distributed"
                         icon={Building2}

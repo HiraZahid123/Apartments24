@@ -11,7 +11,8 @@ import {
     UserCheck,
     ToggleLeft,
     ToggleRight,
-    KeyRound
+    KeyRound,
+    Percent
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -23,6 +24,7 @@ export default function Edit({ auth, user }) {
         password_confirmation: '',
         user_type: user.user_type,
         is_active: user.is_active,
+        owner_revenue_percentage: user.owner_revenue_percentage || 65,
     });
 
     const handleSubmit = (e) => {
@@ -99,8 +101,8 @@ export default function Edit({ auth, user }) {
                                                 type="button"
                                                 onClick={() => setData('user_type', role)}
                                                 className={`flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest border-2 transition-all ${data.user_type === role
-                                                        ? 'bg-slate-900 text-white border-slate-900 shadow-lg'
-                                                        : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'
+                                                    ? 'bg-slate-900 text-white border-slate-900 shadow-lg'
+                                                    : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'
                                                     }`}
                                             >
                                                 {role}
@@ -115,8 +117,8 @@ export default function Edit({ auth, user }) {
                                         type="button"
                                         onClick={() => setData('is_active', !data.is_active)}
                                         className={`w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all ${data.is_active
-                                                ? 'bg-emerald-50 text-emerald-700'
-                                                : 'bg-rose-50 text-rose-700'
+                                            ? 'bg-emerald-50 text-emerald-700'
+                                            : 'bg-rose-50 text-rose-700'
                                             }`}
                                     >
                                         <span className="font-black text-xs uppercase tracking-widest">
@@ -125,6 +127,40 @@ export default function Edit({ auth, user }) {
                                         {data.is_active ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8" />}
                                     </button>
                                 </div>
+
+                                {/* Revenue Percentage - Only for Owners */}
+                                {data.user_type === 'owner' && (
+                                    <div className="space-y-4 md:col-span-2 bg-indigo-50/30 p-8 rounded-[2rem] border border-indigo-50">
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                            <div className="space-y-1">
+                                                <label className="flex items-center gap-2 text-[10px] font-black text-indigo-400 uppercase tracking-widest ml-1">
+                                                    <Percent className="w-4 h-4" /> Owner Revenue Share
+                                                </label>
+                                                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Manually set custom revenue percentage for this owner</p>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <div className="relative">
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        max="100"
+                                                        step="0.01"
+                                                        value={data.owner_revenue_percentage}
+                                                        onChange={e => setData('owner_revenue_percentage', e.target.value)}
+                                                        className="w-32 px-6 py-4 bg-white border-none rounded-2xl focus:ring-4 focus:ring-indigo-100 transition-all font-black text-slate-900 text-center"
+                                                    />
+                                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-slate-300">%</span>
+                                                </div>
+                                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                                    Admin Commission: <span className="text-indigo-600">{(100 - (parseFloat(data.owner_revenue_percentage) || 65)).toFixed(2)}%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {errors.owner_revenue_percentage && <p className="text-rose-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1 mt-2">
+                                            <AlertCircle className="w-3 h-3" /> {errors.owner_revenue_percentage}
+                                        </p>}
+                                    </div>
+                                )}
                             </div>
                         </div>
 

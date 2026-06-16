@@ -112,7 +112,7 @@ export default function Index({ auth, expenses, filters }) {
                                         </td>
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-1">
-                                                <span className="text-lg font-black text-slate-900 tracking-tight">${expense.amount}</span>
+                                                <span className="text-lg font-black text-slate-900 tracking-tight">€{expense.amount}</span>
                                             </div>
                                         </td>
                                         <td className="px-8 py-6 text-right">

@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { Users, Target, Shield, Globe, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Users, Target, Shield, Globe, ArrowRight, CheckCircle } from 'lucide-react';
 import PublicNavbar from '@/Components/PublicNavbar';
 import PublicFooter from '@/Components/PublicFooter';
 
@@ -77,7 +77,7 @@ export default function About() {
                             <ul className="mt-10 space-y-4">
                                 {['Automated Check-ins', 'Tax Compliance', '24/7 Guest Support'].map((item) => (
                                     <li key={item} className="flex items-center gap-3 font-bold text-slate-900">
-                                        <CheckCircle2 className="w-6 h-6 text-emerald-500" /> {item}
+                                        <CheckCircle className="w-6 h-6 text-emerald-500" /> {item}
                                     </li>
                                 ))}
                             </ul>

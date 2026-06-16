@@ -53,6 +53,7 @@ class UserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'user_type' => 'required|in:admin,owner,guest',
             'is_active' => 'boolean',
+            'owner_revenue_percentage' => 'nullable|numeric|min:0|max:100',
         ]);
 
         User::create([
@@ -61,6 +62,7 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
             'user_type' => $request->user_type,
             'is_active' => $request->is_active ?? true,
+            'owner_revenue_percentage' => $request->owner_revenue_percentage ?? 65.00,
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
@@ -75,25 +77,33 @@ class UserController extends Controller
                 'email' => $user->email,
                 'user_type' => $user->user_type,
                 'is_active' => $user->is_active,
+                'owner_revenue_percentage' => $user->owner_revenue_percentage,
             ]
         ]);
     }
 
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'user_type' => 'required|in:admin,owner,guest',
             'is_active' => 'boolean',
-        ]);
+            'owner_revenue_percentage' => 'nullable|numeric|min:0|max:100',
+        ];
+
+        if ($request->filled('password')) {
+            $rules['password'] = ['confirmed', Rules\Password::defaults()];
+        }
+
+        $request->validate($rules);
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
             'user_type' => $request->user_type,
             'is_active' => $request->is_active,
+            'owner_revenue_percentage' => $request->owner_revenue_percentage ?? 65.00,
         ]);
 
         if ($request->filled('password')) {

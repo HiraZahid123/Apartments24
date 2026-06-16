@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { Shield, Lock, Eye, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Shield, Lock, Eye, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import PublicNavbar from '@/Components/PublicNavbar';
 import PublicFooter from '@/Components/PublicFooter';
 
@@ -68,7 +68,7 @@ export default function Privacy() {
                                             'Technical Data (IP Address, Browser Type)'
                                         ].map(item => (
                                             <li key={item} className="flex items-start gap-3">
-                                                <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                                <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                                                 <span className="text-slate-700 font-medium">{item}</span>
                                             </li>
                                         ))}

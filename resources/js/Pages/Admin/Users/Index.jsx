@@ -11,12 +11,12 @@ import {
     Building2,
     Search,
     Filter,
-    MoreVertical,
-    Edit3,
-    Trash2,
-    UserCircle,
-    CheckCircle2,
-    XCircle
+    ExternalLink,
+    XCircle,
+    Replace,
+    CheckCircle,
+    Edit2,
+    Trash2
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
@@ -126,7 +126,7 @@ export default function Index({ auth, users, filters }) {
                                         <td className="px-8 py-6">
                                             {user.is_active ? (
                                                 <div className="flex items-center gap-1.5 text-emerald-600">
-                                                    <CheckCircle2 className="w-4 h-4" />
+                                                    <CheckCircle className="w-4 h-4" />
                                                     <span className="text-[10px] font-black uppercase tracking-tight">Active</span>
                                                 </div>
                                             ) : (
@@ -138,11 +138,20 @@ export default function Index({ auth, users, filters }) {
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <div className="flex items-center justify-end gap-2">
+                                                {user.user_type === 'owner' && (
+                                                    <button
+                                                        onClick={() => router.post(route('admin.impersonate.take', user.id))}
+                                                        className="p-3 bg-brand-orange/10 text-brand-orange hover:bg-brand-orange hover:text-white rounded-xl transition-all"
+                                                        title="Switch to this Owner"
+                                                    >
+                                                        <Replace className="w-5 h-5" />
+                                                    </button>
+                                                )}
                                                 <Link
                                                     href={route('admin.users.edit', user.id)}
                                                     className="p-3 bg-slate-50 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
                                                 >
-                                                    <Edit3 className="w-5 h-5" />
+                                                    <Edit2 className="w-5 h-5" />
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDelete(user.id)}

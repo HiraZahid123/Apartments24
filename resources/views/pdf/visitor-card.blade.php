@@ -120,24 +120,51 @@
                     <div class="detail-value">{{ $booking->check_in_date->diffInDays($booking->check_out_date) }} Nights</div>
                 </div>
                 
-                @if($booking->checkin)
-                <div class="detail-row">
-                    <div class="detail-label">Date of Birth:</div>
-                    <div class="detail-value">{{ $booking->checkin->dob ?? 'N/A' }}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Nationality:</div>
-                    <div class="detail-value">{{ $booking->checkin->nationality ?? 'N/A' }}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Document:</div>
-                    <div class="detail-value">{{ $booking->checkin->document_type ?? 'ID/Passport' }} #{{ $booking->checkin->document_number ?? '...' }}</div>
-                </div>
+                @if($booking->checkins->isNotEmpty())
+                    @foreach($booking->checkins as $index => $checkin)
+                        @if($index > 0)
+                            <div style="margin-top: 15px; border-top: 1px dashed #f1f5f9; padding-top: 10px;"></div>
+                        @endif
+                        <div class="detail-row">
+                            <div class="detail-label">Guest {{ $index + 1 }}:</div>
+                            <div class="detail-value">{{ $checkin->first_name }} {{ $checkin->last_name }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Date of Birth:</div>
+                            <div class="detail-value">{{ $checkin->date_of_birth ? $checkin->date_of_birth->format('d.m.Y') : 'N/A' }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Nationality:</div>
+                            <div class="detail-value">{{ $checkin->nationality ?? 'N/A' }}</div>
+                        </div>
+                        @if($checkin->phone_number)
+                        <div class="detail-row">
+                            <div class="detail-label">Phone:</div>
+                            <div class="detail-value">{{ $checkin->phone_number }}</div>
+                        </div>
+                        @endif
+                        @if($checkin->purpose_of_travel)
+                        <div class="detail-row">
+                            <div class="detail-label">Purpose of Travel:</div>
+                            <div class="detail-value">{{ ucfirst($checkin->purpose_of_travel) }}</div>
+                        </div>
+                        @endif
+                        @if($checkin->number_of_minors !== null)
+                        <div class="detail-row">
+                            <div class="detail-label">Number of Minors:</div>
+                            <div class="detail-value">{{ $checkin->number_of_minors }}</div>
+                        </div>
+                        @endif
+                        <div class="detail-row">
+                            <div class="detail-label">Document:</div>
+                            <div class="detail-value">{{ $checkin->document_type ?? 'ID/Passport' }} #{{ $checkin->document_number ?? '...' }}</div>
+                        </div>
+                    @endforeach
                 @else
-                <div class="detail-row">
-                    <div class="detail-label">Verification:</div>
-                    <div class="detail-value" style="color: #ef4444;">Digital Form Pending</div>
-                </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Verification:</div>
+                        <div class="detail-value" style="color: #ef4444;">Digital Form Pending</div>
+                    </div>
                 @endif
             </div>
         </div>

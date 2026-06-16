@@ -16,6 +16,9 @@ class GuestCheckin extends Model
         'last_name',
         'date_of_birth',
         'nationality',
+        'phone_number',
+        'purpose_of_travel',
+        'number_of_minors',
         'document_type',
         'document_number',
         'identification_image',
@@ -28,6 +31,7 @@ class GuestCheckin extends Model
     protected $casts = [
         'verified_at' => 'datetime',
         'date_of_birth' => 'date',
+        'number_of_minors' => 'integer',
     ];
 
     /**

@@ -9,11 +9,23 @@ export default function Edit({ auth, apartment, owners }) {
         address: apartment.address || '',
         city: apartment.city || '',
         instructions: apartment.instructions || '',
+        instructions_et: apartment.instructions_et || '',
+        instructions_ru: apartment.instructions_ru || '',
         rental_terms: apartment.rental_terms || '',
+        rental_terms_et: apartment.rental_terms_et || '',
+        rental_terms_ru: apartment.rental_terms_ru || '',
+        arrival_url: apartment.arrival_url || '',
+        arrival_url_en: apartment.arrival_url_en || '',
+        arrival_url_et: apartment.arrival_url_et || '',
+        arrival_url_ru: apartment.arrival_url_ru || '',
         owner_id: apartment.owner_id || '',
         owner_name: apartment.owner_name || '',
         keybox_code: apartment.keybox_code || '',
+        smart_lock_code: apartment.smart_lock_code || '',
+        wifi_ssid: apartment.wifi_ssid || '',
+        wifi_password: apartment.wifi_password || '',
         is_active: apartment.is_active,
+        bed_type: apartment.bed_type || '',
     });
 
     const submit = (e) => {
@@ -61,11 +73,21 @@ export default function Edit({ auth, apartment, owners }) {
                 <form onSubmit={submit} className="space-y-8">
                     {/* Basic Information Section */}
                     <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-10">
-                        <div className="flex items-center gap-4 mb-10 pb-6 border-b border-slate-50">
-                            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
-                                <Building2 className="w-6 h-6" />
+                        <div className="flex items-center justify-between mb-10 pb-6 border-b border-slate-50">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                                    <Building2 className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-black text-slate-900 italic uppercase">Property Details</h3>
                             </div>
-                            <h3 className="text-xl font-black text-slate-900 italic uppercase">Property Details</h3>
+                            
+                            <Link
+                                href={route('admin.apartments.guidebook.edit', apartment.id)}
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg"
+                            >
+                                <Info className="w-4 h-4" />
+                                Edit Digital Guidebook
+                            </Link>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -106,6 +128,20 @@ export default function Edit({ auth, apartment, owners }) {
                                     className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
                                 />
                                 {errors.address && <p className="text-rose-500 text-xs font-bold">{errors.address}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <Info className="w-3 h-3" /> Bed Type
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.bed_type || ''}
+                                    onChange={e => setData('bed_type', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="e.g. 1 Queen Bed, 2 Single Beds"
+                                />
+                                {errors.bed_type && <p className="text-rose-500 text-xs font-bold">{errors.bed_type}</p>}
                             </div>
                         </div>
                     </div>
@@ -165,6 +201,19 @@ export default function Edit({ auth, apartment, owners }) {
 
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <Key className="w-3 h-3" /> Smart Lock Code (Optional)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.smart_lock_code}
+                                    onChange={e => setData('smart_lock_code', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900 font-mono"
+                                />
+                                {errors.smart_lock_code && <p className="text-rose-500 text-xs font-bold">{errors.smart_lock_code}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                     <ToggleRight className="w-3 h-3" /> Visibility Status
                                 </label>
                                 <div className="flex items-center gap-4 py-4 px-6 bg-slate-50 rounded-2xl">
@@ -179,6 +228,30 @@ export default function Edit({ auth, apartment, owners }) {
                                         <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${data.is_active ? 'translate-x-6' : 'translate-x-1'}`} />
                                     </button>
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Wi-Fi Network Name (SSID)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.wifi_ssid}
+                                    onChange={e => setData('wifi_ssid', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Wi-Fi Password
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.wifi_password}
+                                    onChange={e => setData('wifi_password', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                />
                             </div>
                         </div>
                     </div>
@@ -195,7 +268,7 @@ export default function Edit({ auth, apartment, owners }) {
                         <div className="space-y-8">
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    Arrival Instructions
+                                    Arrival Instructions (English)
                                 </label>
                                 <textarea
                                     value={data.instructions}
@@ -207,11 +280,95 @@ export default function Edit({ auth, apartment, owners }) {
 
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    Rental Terms & Conditions
+                                    Arrival Map URL (English)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.arrival_url_en}
+                                    onChange={e => setData('arrival_url_en', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Arrival Instructions (Estonian)
+                                </label>
+                                <textarea
+                                    value={data.instructions_et}
+                                    onChange={e => setData('instructions_et', e.target.value)}
+                                    rows="4"
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Arrival Map URL (Estonian)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.arrival_url_et}
+                                    onChange={e => setData('arrival_url_et', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Arrival Instructions (Russian)
+                                </label>
+                                <textarea
+                                    value={data.instructions_ru}
+                                    onChange={e => setData('instructions_ru', e.target.value)}
+                                    rows="4"
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Arrival Map URL (Russian)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.arrival_url_ru}
+                                    onChange={e => setData('arrival_url_ru', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Rental Terms & Conditions (English)
                                 </label>
                                 <textarea
                                     value={data.rental_terms}
                                     onChange={e => setData('rental_terms', e.target.value)}
+                                    rows="4"
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Rental Terms & Conditions (Estonian)
+                                </label>
+                                <textarea
+                                    value={data.rental_terms_et}
+                                    onChange={e => setData('rental_terms_et', e.target.value)}
+                                    rows="4"
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Rental Terms & Conditions (Russian)
+                                </label>
+                                <textarea
+                                    value={data.rental_terms_ru}
+                                    onChange={e => setData('rental_terms_ru', e.target.value)}
                                     rows="4"
                                     className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
                                 />

@@ -1,13 +1,16 @@
 import Sidebar from '@/Components/Sidebar';
 import Header from '@/Components/Header';
 import { useState } from 'react';
-import { Menu, Building2 } from 'lucide-react';
+import { Menu, Building2, Calendar, PlusCircle, Settings as SettingsIcon, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { Link, usePage } from '@inertiajs/react';
+
 export default function AuthenticatedLayout({ header, children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { url } = usePage();
 
     return (
         <div className="min-h-screen bg-white flex font-sans selection:bg-orange-100 selection:text-orange-900">
@@ -104,6 +107,39 @@ export default function AuthenticatedLayout({ header, children }) {
                     background: #cbd5e1;
                 }
             `}} />
+
+            {/* Mobile Bottom Navigation */}
+            <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 flex items-center justify-around h-20 px-6 z-40 pb-safe shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
+                <Link
+                    href={route('admin.bookings.index')}
+                    className={`flex flex-col items-center gap-1 group ${route().current('admin.bookings.index') ? 'text-brand-orange' : 'text-slate-400'}`}
+                >
+                    <div className={`p-2 rounded-xl transition-all ${route().current('admin.bookings.index') ? 'bg-orange-50' : 'group-hover:bg-slate-50'}`}>
+                        <LayoutGrid className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Bookings</span>
+                </Link>
+
+                <Link
+                    href={route('admin.bookings.create')}
+                    className={`flex flex-col items-center gap-1 group -mt-10 ${route().current('admin.bookings.create') ? 'text-brand-orange' : 'text-slate-400'}`}
+                >
+                    <div className="p-4 bg-brand-orange text-white rounded-2xl shadow-lg shadow-orange-200 border-4 border-white transition-transform hover:scale-110 active:scale-95">
+                        <PlusCircle className="w-8 h-8" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest mt-1">New Booking</span>
+                </Link>
+
+                <Link
+                    href={route('profile.edit')}
+                    className={`flex flex-col items-center gap-1 group ${route().current('profile.edit') ? 'text-brand-orange' : 'text-slate-400'}`}
+                >
+                    <div className={`p-2 rounded-xl transition-all ${route().current('profile.edit') ? 'bg-orange-50' : 'group-hover:bg-slate-50'}`}>
+                        <SettingsIcon className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Settings</span>
+                </Link>
+            </nav>
         </div>
     );
 }

@@ -142,8 +142,8 @@
                     <th>Guest</th>
                     <th>Check-in</th>
                     <th class="text-right">Total</th>
-                    <th class="text-right">Owner (65%)</th>
-                    <th class="text-right">Admin (35%)</th>
+                    <th class="text-right">Owner Share</th>
+                    <th class="text-right">Admin Share</th>
                 </tr>
             </thead>
             <tbody>

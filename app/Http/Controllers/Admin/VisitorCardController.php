@@ -40,7 +40,7 @@ class VisitorCardController extends Controller
             ->whereYear('check_in_date', $yearMonth[0])
             ->whereMonth('check_in_date', $yearMonth[1])
             ->where('is_checked_in', true)
-            ->with(['checkin'])
+            ->with(['checkins'])
             ->get();
 
         if ($bookings->isEmpty()) {

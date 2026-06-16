@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useState } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import { Building2, Plus, Edit2, Trash2, CheckCircle2, XCircle, Search, MapPin, User, Key, ArrowRight } from 'lucide-react';
+import { Building2, Plus, Edit2, Trash2, CheckCircle, XCircle, Search, MapPin, User, Key, ArrowRight } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 export default function Index({ auth, apartments, filters }) {
@@ -65,7 +65,7 @@ export default function Index({ auth, apartments, filters }) {
                                     <div className="flex items-center gap-2">
                                         {apartment.is_active ? (
                                             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
-                                                <CheckCircle2 className="w-3 h-3" /> Active
+                                                <CheckCircle className="w-3 h-3" /> Active
                                             </span>
                                         ) : (
                                             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest">

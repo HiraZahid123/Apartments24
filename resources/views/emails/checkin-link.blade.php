@@ -35,47 +35,7 @@
         }
         .content {
             padding: 40px;
-        }
-        .welcome {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: #0f172a;
-        }
-        .apartment-card {
-            background-color: #fff7ed;
-            border: 1px solid #ffedd5;
-            border-radius: 16px;
-            padding: 24px;
-            margin: 24px 0;
-        }
-        .apartment-name {
-            font-weight: 800;
-            font-size: 18px;
-            color: #c2410c;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .apartment-details {
-            font-size: 14px;
-            color: #9a3412;
-            font-weight: 600;
-        }
-        .cta-container {
-            text-align: center;
-            margin: 32px 0;
-        }
-        .btn {
-            background-color: #FF5B22;
-            color: #ffffff !important;
-            padding: 16px 32px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 16px;
-            display: inline-block;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(255, 91, 34, 0.3);
+            white-space: pre-line;
         }
         .footer {
             padding: 24px;
@@ -95,27 +55,21 @@
             <h1>Apartments24</h1>
         </div>
         <div class="content">
-            <h2 class="welcome">Tere, {{ $booking->guest_name }}!</h2>
-            <p>Thank you for choosing Apartments24. We are looking forward to your stay.</p>
-            
-            <p>To ensure a smooth arrival, please complete your digital registration before your check-in. This will give you access to your entry codes and arrival instructions.</p>
-
-            <div class="apartment-card">
-                <span class="apartment-name">{{ $booking->apartment->name }}</span>
-                <span class="apartment-details">
-                    Check-in: {{ \Carbon\Carbon::parse($booking->check_in)->format('d M Y') }}
-                </span>
-            </div>
-
-            <div class="cta-container">
-                <a href="{{ url('/guest/checkin/' . $booking->checkin_token) }}" class="btn">
-                    Start Digital Check-in
-                </a>
-            </div>
-
-            <p style="font-size: 14px; color: #64748b;">
-                If you have any questions, feel free to reply to this email or contact us via WhatsApp.
-            </p>
+            @php
+                $safeContent = e($content);
+                $linkedContent = preg_replace(
+                    '~(https?://[^\s\(\)]+[^\s\(\)\. \! \? \,])~',
+                    '<a href="$1" style="color: #FF5B22; text-decoration: underline;">$1</a>',
+                    $safeContent
+                );
+            @endphp
+            {!! nl2br($linkedContent) !!}
+        </div>
+        <div style="padding: 0 40px 40px; text-align: center;">
+            <a href="{{ url('/guest/checkin/' . $booking->checkin_token) }}" 
+               style="display: inline-block; background-color: #FF5B22; color: #ffffff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; width: 80%;">
+               {{ $templateData['labels']['dashboard'] ?? 'Register Now' }}
+            </a>
         </div>
         <div class="footer">
             <p><strong>Apartments24 Guest Host System</strong></p>

@@ -3,14 +3,14 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import PublicNavbar from '@/Components/PublicNavbar';
 import PublicFooter from '@/Components/PublicFooter';
 import { Building2, Key, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 
-export default function Login({ status }) {
+export default function Login({ status, email }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: '',
+        email: email || '',
         password: '',
         remember: false,
     });
@@ -73,6 +73,18 @@ export default function Login({ status }) {
                         {status && (
                             <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl text-sm font-bold text-emerald-700 animate-fadeIn">
                                 {status}
+                            </div>
+                        )}
+
+                        {usePage().props.flash?.info && (
+                            <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-xl text-sm font-bold text-blue-700 animate-fadeIn">
+                                {usePage().props.flash.info}
+                            </div>
+                        )}
+
+                        {usePage().props.flash?.error && (
+                            <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-xl text-sm font-bold text-rose-700 animate-fadeIn">
+                                {usePage().props.flash.error}
                             </div>
                         )}
 

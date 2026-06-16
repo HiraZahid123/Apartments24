@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link, usePage, Head } from "@inertiajs/react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Building2, Calendar, Users, Key, ArrowRight, Shield, Layout, DollarSign, CheckCircle2 } from "lucide-react";
+import { Building2, Calendar, Users, Key, ArrowRight, Shield, Layout, DollarSign, CheckCircle } from "lucide-react";
 import PublicNavbar from "@/Components/PublicNavbar";
 import PublicFooter from "@/Components/PublicFooter";
 
@@ -60,11 +60,11 @@ export default function Welcome() {
 
                         <div className="mt-12 flex flex-wrap justify-center lg:justify-start items-center gap-8 text-slate-400">
                             <div className="flex items-center gap-2">
-                                <CheckCircle2 className="h-5 w-5 text-brand-orange" />
+                                <CheckCircle className="h-5 w-5 text-brand-orange" />
                                 <span className="text-sm font-semibold">24/7 Support</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <CheckCircle2 className="h-5 w-5 text-brand-orange" />
+                                <CheckCircle className="h-5 w-5 text-brand-orange" />
                                 <span className="text-sm font-semibold">No Credit Card Required</span>
                             </div>
                         </div>

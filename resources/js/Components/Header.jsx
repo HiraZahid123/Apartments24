@@ -11,11 +11,13 @@ import {
     Calendar,
     CheckCircle,
     Clock,
-    UserPlus
+    UserPlus,
+    X,
+    Loader2
 } from 'lucide-react';
 
 export default function Header() {
-    const user = usePage().props.auth.user;
+    const { user, impersonated_by } = usePage().props.auth;
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
@@ -28,6 +30,7 @@ export default function Header() {
 
     // Fetch notifications
     const fetchNotifications = async () => {
+        if (impersonated_by) return; // Skip notification fetch when impersonating as it hits admin-only route
         try {
             const response = await fetch(route('admin.notifications.latest'));
             const data = await response.json();
@@ -168,6 +171,16 @@ export default function Header() {
             </div>
 
             <div className="flex items-center gap-3 lg:gap-5">
+                {/* Impersonation Return */}
+                {impersonated_by && (
+                    <button
+                        onClick={() => router.post(route('admin.impersonate.leave'))}
+                        className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2"
+                    >
+                        <UserPlus className="w-4 h-4" />
+                        Return to Admin
+                    </button>
+                )}
                 {/* Actions */}
                 <div className="flex items-center gap-1 md:gap-2 pr-4 border-r border-slate-100">
                     {/* Notifications Bell */}

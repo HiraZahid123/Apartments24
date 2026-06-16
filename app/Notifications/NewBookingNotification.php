@@ -27,7 +27,7 @@ class NewBookingNotification extends Notification
     {
         return [
             'title' => 'New Booking Received',
-            'message' => "{$this->booking->guest_name} has booked {$this->booking->apartment->name}",
+            'message' => "{$this->booking->guest_name} has booked {$this->booking->linked_apartment_names}",
             'booking_id' => $this->booking->id,
             'type' => 'booking',
             'icon_color' => 'text-blue-500',

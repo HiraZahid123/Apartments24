@@ -18,7 +18,8 @@ class User extends Authenticatable
         'user_type', // admin, owner, guest
         'phone',
         'preferred_language',
-        'is_active'
+        'is_active',
+        'owner_revenue_percentage'
     ];
 
     protected $hidden = [
@@ -30,6 +31,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_active' => 'boolean',
+        'owner_revenue_percentage' => 'decimal:2',
     ];
 
     // User type helpers

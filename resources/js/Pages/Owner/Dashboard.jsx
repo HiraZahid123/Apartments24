@@ -47,7 +47,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
         datasets: [
             {
                 fill: true,
-                label: 'Net Revenue ($)',
+                label: 'Net Revenue (€)',
                 data: monthlyRevenue.map(item => item.revenue),
                 borderColor: '#FF5B22',
                 backgroundColor: 'rgba(255, 91, 34, 0.05)',
@@ -83,7 +83,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                 beginAtZero: true,
                 grid: { borderDash: [4, 4], color: '#f1f5f9' },
                 ticks: {
-                    callback: (value) => '$' + value,
+                    callback: (value) => '€' + value,
                     font: { weight: '600' },
                     color: '#94a3b8'
                 }
@@ -105,7 +105,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                 )}
             </div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">{title}</p>
-            <h3 className="text-3xl font-black text-slate-900 tracking-tight">${value}</h3>
+            <h3 className="text-3xl font-black text-slate-900 tracking-tight">€{value}</h3>
         </div>
     );
 
@@ -120,7 +120,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <StatCard
-                        title="Net Revenue (65%)"
+                        title={`Net Revenue (${auth.user.owner_revenue_percentage || 65}%)`}
                         value={stats.total_revenue}
                         icon={DollarSign}
                         trend={stats.revenue_trend > 0 ? 'up' : stats.revenue_trend < 0 ? 'down' : null}
@@ -258,7 +258,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <p className="text-sm font-black text-slate-900 tracking-tight">${booking.revenue}</p>
+                                            <p className="text-sm font-black text-slate-900 tracking-tight">€{booking.revenue}</p>
                                         </td>
                                         <td className="px-8 py-6">
                                             <span className={`inline-flex px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider ${booking.status === 'checked_in' ? 'bg-emerald-50 text-emerald-600' :

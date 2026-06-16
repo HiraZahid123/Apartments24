@@ -16,12 +16,23 @@ class Apartment extends Model
         'address',
         'city',
         'instructions',
+        'instructions_et',
+        'instructions_ru',
         'rental_terms',
+        'rental_terms_et',
+        'rental_terms_ru',
         'arrival_url',
+        'arrival_url_en',
+        'arrival_url_et',
+        'arrival_url_ru',
         'owner_id',
         'owner_name',
         'keybox_code',
+        'smart_lock_code',
+        'wifi_ssid',
+        'wifi_password',
         'is_active',
+        'bed_type',
     ];
 
     protected $casts = [
@@ -42,6 +53,14 @@ class Apartment extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Get the guidebook for the apartment.
+     */
+    public function guidebook(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Guidebook::class);
     }
 
     /**

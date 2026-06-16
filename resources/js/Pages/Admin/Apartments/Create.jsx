@@ -9,11 +9,23 @@ export default function Create({ auth, owners }) {
         address: '',
         city: '',
         instructions: '',
+        instructions_et: '',
+        instructions_ru: '',
         rental_terms: '',
+        rental_terms_et: '',
+        rental_terms_ru: '',
+        arrival_url: '',
+        arrival_url_en: '',
+        arrival_url_et: '',
+        arrival_url_ru: '',
         owner_id: '',
         owner_name: '',
         keybox_code: '',
+        smart_lock_code: '',
+        wifi_ssid: '',
+        wifi_password: '',
         is_active: true,
+        bed_type: '',
     });
 
     const submit = (e) => {
@@ -91,6 +103,20 @@ export default function Create({ auth, owners }) {
                                 />
                                 {errors.address && <p className="text-rose-500 text-xs font-bold">{errors.address}</p>}
                             </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <Info className="w-3 h-3" /> Bed Type
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.bed_type}
+                                    onChange={e => setData('bed_type', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="e.g. 1 Queen Bed, 2 Single Beds"
+                                />
+                                {errors.bed_type && <p className="text-rose-500 text-xs font-bold">{errors.bed_type}</p>}
+                            </div>
                         </div>
                     </div>
 
@@ -151,6 +177,20 @@ export default function Create({ auth, owners }) {
 
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <Key className="w-3 h-3" /> Smart Lock Code (Optional)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.smart_lock_code}
+                                    onChange={e => setData('smart_lock_code', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900 font-mono"
+                                    placeholder="e.g., 5678"
+                                />
+                                {errors.smart_lock_code && <p className="text-rose-500 text-xs font-bold">{errors.smart_lock_code}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                     <ToggleRight className="w-3 h-3" /> Visibility Status
                                 </label>
                                 <div className="flex items-center gap-4 py-4 px-6 bg-slate-50 rounded-2xl">
@@ -165,6 +205,32 @@ export default function Create({ auth, owners }) {
                                         <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${data.is_active ? 'translate-x-6' : 'translate-x-1'}`} />
                                     </button>
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Wi-Fi Network Name (SSID)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.wifi_ssid}
+                                    onChange={e => setData('wifi_ssid', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="e.g., Apartments24_Guest"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Wi-Fi Password
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.wifi_password}
+                                    onChange={e => setData('wifi_password', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="e.g., Welcome24"
+                                />
                             </div>
                         </div>
                     </div>
@@ -181,7 +247,7 @@ export default function Create({ auth, owners }) {
                         <div className="space-y-8">
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    Arrival Instructions
+                                    Arrival Instructions (English)
                                 </label>
                                 <textarea
                                     value={data.instructions}
@@ -194,7 +260,72 @@ export default function Create({ auth, owners }) {
 
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    Rental Terms & Conditions
+                                    Arrival Map URL (English)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.arrival_url_en}
+                                    onChange={e => setData('arrival_url_en', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="e.g., Google Maps link"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Arrival Instructions (Estonian)
+                                </label>
+                                <textarea
+                                    value={data.instructions_et}
+                                    onChange={e => setData('instructions_et', e.target.value)}
+                                    rows="4"
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="Detailed instructions in Estonian..."
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Arrival Map URL (Estonian)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.arrival_url_et}
+                                    onChange={e => setData('arrival_url_et', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="e.g., Google Maps link in Estonian"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Arrival Instructions (Russian)
+                                </label>
+                                <textarea
+                                    value={data.instructions_ru}
+                                    onChange={e => setData('instructions_ru', e.target.value)}
+                                    rows="4"
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="Detailed instructions in Russian..."
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Arrival Map URL (Russian)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.arrival_url_ru}
+                                    onChange={e => setData('arrival_url_ru', e.target.value)}
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="e.g., Google Maps link in Russian"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Rental Terms & Conditions (English)
                                 </label>
                                 <textarea
                                     value={data.rental_terms}
@@ -202,6 +333,32 @@ export default function Create({ auth, owners }) {
                                     rows="4"
                                     className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
                                     placeholder="Standard terms and conditions for this property..."
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Rental Terms & Conditions (Estonian)
+                                </label>
+                                <textarea
+                                    value={data.rental_terms_et}
+                                    onChange={e => setData('rental_terms_et', e.target.value)}
+                                    rows="4"
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="Standard terms and conditions in Estonian..."
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    Rental Terms & Conditions (Russian)
+                                </label>
+                                <textarea
+                                    value={data.rental_terms_ru}
+                                    onChange={e => setData('rental_terms_ru', e.target.value)}
+                                    rows="4"
+                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
+                                    placeholder="Standard terms and conditions in Russian..."
                                 />
                             </div>
                         </div>

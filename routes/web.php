@@ -38,6 +38,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::post('/bookings/bulk-update-status', [App\Http\Controllers\Admin\BookingController::class, 'bulkUpdateStatus'])->name('bookings.bulk-update-status');
     Route::resource('bookings', App\Http\Controllers\Admin\BookingController::class);
     Route::post('bookings/{booking}/send-checkin', [App\Http\Controllers\Admin\BookingController::class, 'sendCheckin'])->name('bookings.send-checkin');
+    Route::get('bookings/{booking}/invoice', [App\Http\Controllers\Admin\BookingController::class, 'downloadInvoice'])->name('bookings.invoice');
+    Route::post('bookings/{booking}/invoice/resend', [App\Http\Controllers\Admin\BookingController::class, 'resendInvoice'])->name('bookings.invoice.resend');
 
     Route::get('visitor-cards', [App\Http\Controllers\Admin\VisitorCardController::class, 'index'])->name('visitor-cards.index');
     Route::get('visitor-cards/generate', [App\Http\Controllers\Admin\VisitorCardController::class, 'generate'])->name('visitor-cards.generate');
@@ -55,7 +57,23 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     // Reports
     Route::get('/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [\App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
+
+    // Impersonation
+    Route::post('/impersonate/take/{user}', [App\Http\Controllers\Admin\ImpersonationController::class, 'take'])->name('impersonate.take');
+
+    // Message Templates
+    Route::resource('message-templates', App\Http\Controllers\Admin\MessageTemplateController::class)->only(['index', 'edit', 'update']);
+
+    // Admin Settings (Company Info, etc.)
+    Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+
+    // Guidebooks
+    Route::get('apartments/{apartment}/guidebook', [App\Http\Controllers\Admin\GuidebookController::class, 'edit'])->name('apartments.guidebook.edit');
+    Route::post('apartments/{apartment}/guidebook', [App\Http\Controllers\Admin\GuidebookController::class, 'update'])->name('apartments.guidebook.update');
 });
+
+Route::post('/admin/impersonate/leave', [App\Http\Controllers\Admin\ImpersonationController::class, 'leave'])->name('admin.impersonate.leave')->middleware('auth');
 
 // ------------------- OWNER ROUTES (Phase 6) -------------------
 Route::prefix('owner')->middleware(['auth', 'owner'])->name('owner.')->group(function () {
@@ -69,6 +87,9 @@ Route::prefix('guest')->name('guest.')->group(function () {
     Route::post('/checkin/{token}', [App\Http\Controllers\Guest\CheckinController::class, 'store'])->name('checkin.store');
     Route::get('/checkin/{token}/success', [App\Http\Controllers\Guest\CheckinController::class, 'success'])->name('checkin.success');
     Route::post('/checkin/{token}/checkout', [App\Http\Controllers\Guest\CheckinController::class, 'checkout'])->name('checkin.checkout');
+
+    // Guidebook
+    Route::get('/guidebook/{token}', [App\Http\Controllers\Guest\CheckinController::class, 'guidebook'])->name('guidebook');
 });
 
 require __DIR__ . '/auth.php';

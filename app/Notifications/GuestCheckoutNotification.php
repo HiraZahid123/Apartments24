@@ -26,8 +26,8 @@ class GuestCheckoutNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Guest Checked Out - ' . $this->booking->apartment->name)
-            ->line($this->booking->guest_name . ' has checked out from ' . $this->booking->apartment->name)
+            ->subject('Guest Checked Out - ' . $this->booking->linked_apartment_names)
+            ->line($this->booking->guest_name . ' has checked out from ' . $this->booking->linked_apartment_names)
             ->action('View Booking', route('admin.bookings.edit', $this->booking->id))
             ->line('Thank you for using our application!');
     }
@@ -36,7 +36,7 @@ class GuestCheckoutNotification extends Notification
     {
         return [
             'title' => 'Guest Checked Out',
-            'message' => "{$this->booking->guest_name} has checked out from {$this->booking->apartment->name}",
+            'message' => "{$this->booking->guest_name} has checked out from {$this->booking->linked_apartment_names}",
             'booking_id' => $this->booking->id,
             'type' => 'checkout',
             'icon_color' => 'text-amber-500',

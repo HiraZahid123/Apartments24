@@ -7,7 +7,7 @@ import {
     UserCheck,
     Calendar,
     ArrowRight,
-    CheckCircle2,
+    CheckCircle,
     Clock,
     Mail,
     Filter,
@@ -20,6 +20,13 @@ export default function Dashboard({ bookings, stats, filters }) {
     const [activeFilter, setActiveFilter] = useState(filters?.filter || 'all');
     const [dateFrom, setDateFrom] = useState(filters?.date_from || '');
     const [dateTo, setDateTo] = useState(filters?.date_to || '');
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const [year, month, day] = dateString.split('-');
+        if (!day) return dateString;
+        return `${day}.${month}.${year}`;
+    };
 
     const applyFilter = (filter) => {
         setActiveFilter(filter);
@@ -108,8 +115,8 @@ export default function Dashboard({ bookings, stats, filters }) {
                                     key={btn.key}
                                     onClick={() => applyFilter(btn.key)}
                                     className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${activeFilter === btn.key
-                                            ? 'bg-brand-orange text-white shadow-lg shadow-orange-100'
-                                            : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
+                                        ? 'bg-brand-orange text-white shadow-lg shadow-orange-100'
+                                        : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
                                         }`}
                                 >
                                     {btn.label}
@@ -208,9 +215,9 @@ export default function Dashboard({ bookings, stats, filters }) {
                                         </td>
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-2 text-sm">
-                                                <span className="font-bold text-slate-900">{booking.check_in_date}</span>
+                                                <span className="font-bold text-slate-900">{formatDate(booking.check_in_date)}</span>
                                                 <span className="text-slate-300">→</span>
-                                                <span className="font-bold text-slate-500">{booking.check_out_date}</span>
+                                                <span className="font-bold text-slate-500">{formatDate(booking.check_out_date)}</span>
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
@@ -219,7 +226,7 @@ export default function Dashboard({ bookings, stats, filters }) {
                                         <td className="px-8 py-6">
                                             {booking.is_checked_in ? (
                                                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-black uppercase tracking-wider">
-                                                    <CheckCircle2 className="w-3 h-3" />
+                                                    <CheckCircle className="w-3 h-3" />
                                                     Checked In
                                                 </div>
                                             ) : (
