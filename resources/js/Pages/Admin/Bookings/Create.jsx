@@ -15,6 +15,7 @@ export default function Create({ auth, apartments }) {
         total_price: '',
         service_fee: '',
         status: 'confirmed',
+        disabled_automated_messages: [],
     });
 
     const selectedApartment = data.apartment_ids.length > 0 
@@ -174,6 +175,52 @@ export default function Create({ auth, apartments }) {
                                     />
                                     {errors.check_out_date && <p className="text-rose-500 text-xs font-bold">{errors.check_out_date}</p>}
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Automated Messages Controls */}
+                        <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-10">
+                            <div className="flex items-center gap-4 mb-10 pb-6 border-b border-slate-50">
+                                <div className="p-3 bg-brand-orange/10 text-brand-orange rounded-xl">
+                                    <Mail className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-black text-slate-900 italic uppercase">Automated Messages</h3>
+                            </div>
+
+                            <p className="text-slate-500 text-sm font-medium mb-8">
+                                Turn off specific automated emails for this reservation if you need to override the standard communication flow.
+                            </p>
+
+                            <div className="space-y-6">
+                                {[
+                                    { id: 'guest_registration', label: 'Guest Registration (Check-in Link)', desc: 'Sent automatically when booking is created to request digital check-in.' },
+                                    { id: 'welcome', label: 'Welcome & Access Details', desc: 'Sent when guest completes digital check-in containing door codes.' },
+                                    { id: 'checkout_reminder', label: 'Checkout Reminder', desc: 'Sent on the checkout day morning with instructions and checkout link.' },
+                                    { id: 'thank_you', label: 'Thank You (Goodbye)', desc: 'Sent automatically after the guest check out.' }
+                                ].map((msg) => {
+                                    const isDisabled = data.disabled_automated_messages.includes(msg.id);
+                                    return (
+                                        <div key={msg.id} className="flex items-start justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-slate-100/50 transition-colors">
+                                            <div className="space-y-1 pr-4">
+                                                <label className="text-sm font-black text-slate-700 leading-none">{msg.label}</label>
+                                                <p className="text-xs text-slate-400 font-medium leading-relaxed">{msg.desc}</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const current = data.disabled_automated_messages;
+                                                    setData('disabled_automated_messages', current.includes(msg.id)
+                                                        ? current.filter(id => id !== msg.id)
+                                                        : [...current, msg.id]
+                                                    );
+                                                }}
+                                                className={`w-12 h-6 rounded-full transition-all relative shrink-0 ${isDisabled ? 'bg-rose-500' : 'bg-emerald-500'}`}
+                                            >
+                                                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${isDisabled ? 'left-7' : 'left-1'}`}></div>
+                                            </button>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>

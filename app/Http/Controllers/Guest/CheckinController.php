@@ -122,37 +122,42 @@ class CheckinController extends Controller
                 $admins = \App\Models\User::where('user_type', 'admin')->get();
                 \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\GuestCheckinNotification($booking));
                 
-                // Send Guest Welcome Email with language support
+                // Send Guest Welcome Email with language support if not disabled
                 $language = $booking->preferred_language ?? 'en';
-                Mail::to($booking->guest_email)->send(new GuestWelcomeMail($booking, $language));
+                $disabled = $booking->disabled_automated_messages ?? [];
+                
+                if (!in_array('welcome', $disabled)) {
+                    try {
+                        Mail::to($booking->guest_email)->send(new GuestWelcomeMail($booking, $language));
+                        
+                        // Log the automated message
+                        \App\Models\AutomatedMessageLog::logMessage(
+                            $booking->id,
+                            'welcome',
+                            $language,
+                            $booking->guest_email,
+                            true
+                        );
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::error('Failed to send welcome email: ' . $e->getMessage());
+                        \App\Models\AutomatedMessageLog::logMessage(
+                            $booking->id,
+                            'welcome',
+                            $booking->preferred_language ?? 'en',
+                            $booking->guest_email,
+                            false,
+                            $e->getMessage()
+                        );
+                    }
+                }
                 
                 // Send Invoice if requested
                 if ($booking->wants_invoice) {
                     Mail::to($booking->guest_email)->send(new \App\Mail\GuestInvoiceMail($booking, $language));
                 }
-
-                // Log the automated message
-                \App\Models\AutomatedMessageLog::logMessage(
-                    $booking->id,
-                    'welcome',
-                    $language,
-                    $booking->guest_email,
-                    true
-                );
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to send checkin notification: ' . $e->getMessage());
-            
-            if ($isFirstCheckin) {
-                \App\Models\AutomatedMessageLog::logMessage(
-                    $booking->id,
-                    'welcome',
-                    $booking->preferred_language ?? 'en',
-                    $booking->guest_email,
-                    false,
-                    $e->getMessage()
-                );
-            }
+            \Illuminate\Support\Facades\Log::error('Failed to send checkin notification / invoice: ' . $e->getMessage());
         }
 
         return redirect()->route('guest.checkin.success', ['token' => $token]);
@@ -198,30 +203,36 @@ class CheckinController extends Controller
         try {
             $admins = \App\Models\User::where('user_type', 'admin')->get();
             \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\GuestCheckoutNotification($booking));
-
-            // Send Guest Goodbye Email with language support
-            $language = $booking->preferred_language ?? 'en';
-            Mail::to($booking->guest_email)->send(new GuestGoodbyeMail($booking, $language));
-            
-            // Log the automated message
-            \App\Models\AutomatedMessageLog::logMessage(
-                $booking->id,
-                'thank_you',
-                $language,
-                $booking->guest_email,
-                true
-            );
+ 
+            // Send Guest Goodbye Email with language support if not disabled
+            $disabled = $booking->disabled_automated_messages ?? [];
+            if (!in_array('thank_you', $disabled)) {
+                $language = $booking->preferred_language ?? 'en';
+                try {
+                    Mail::to($booking->guest_email)->send(new GuestGoodbyeMail($booking, $language));
+                    
+                    // Log the automated message
+                    \App\Models\AutomatedMessageLog::logMessage(
+                        $booking->id,
+                        'thank_you',
+                        $language,
+                        $booking->guest_email,
+                        true
+                    );
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to send goodbye email: ' . $e->getMessage());
+                    \App\Models\AutomatedMessageLog::logMessage(
+                        $booking->id,
+                        'thank_you',
+                        $booking->preferred_language ?? 'en',
+                        $booking->guest_email,
+                        false,
+                        $e->getMessage()
+                    );
+                }
+            }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Failed to send checkout notification: ' . $e->getMessage());
-            
-            \App\Models\AutomatedMessageLog::logMessage(
-                $booking->id,
-                'thank_you',
-                $booking->preferred_language ?? 'en',
-                $booking->guest_email,
-                false,
-                $e->getMessage()
-            );
         }
 
         return redirect()->back()->with('success', 'You have successfully checked out. Thank you for staying with us!');

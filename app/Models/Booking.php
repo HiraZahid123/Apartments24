@@ -36,6 +36,7 @@ class Booking extends Model
         'invoice_address',
         'invoice_vat_number',
         'invoice_accommodated_guests',
+        'disabled_automated_messages',
     ];
 
     protected $appends = ['linked_apartment_names'];
@@ -53,6 +54,7 @@ class Booking extends Model
         'is_checked_out' => 'boolean',
         'checked_out_at' => 'datetime',
         'wants_invoice' => 'boolean',
+        'disabled_automated_messages' => 'array',
     ];
 
     /**

@@ -98,6 +98,8 @@ class BookingController extends Controller
             'total_price' => 'required|numeric|min:0',
             'service_fee' => 'nullable|numeric|min:0',
             'status' => 'required|in:confirmed,pending,cancelled',
+            'disabled_automated_messages' => 'nullable|array',
+            'disabled_automated_messages.*' => 'string|in:guest_registration,welcome,thank_you,checkout_reminder',
         ]);
 
         $count = 0;
@@ -119,34 +121,37 @@ class BookingController extends Controller
             }
 
             // AUTOMATIC: Send check-in email with guest's preferred language
-            try {
-                Mail::to($booking->guest_email)->send(new CheckinLinkMail($booking, $booking->preferred_language));
-                
-                // Log the automated message
-                \App\Models\AutomatedMessageLog::logMessage(
-                    $booking->id,
-                    'guest_registration',
-                    $booking->preferred_language,
-                    $booking->guest_email,
-                    true
-                );
-                
-                // Update tracking status
-                $booking->update([
-                    'checkin_form_sent' => true,
-                    'checkin_form_sent_at' => now(),
-                ]);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Failed to send automatic check-in email: ' . $e->getMessage());
-                
-                \App\Models\AutomatedMessageLog::logMessage(
-                    $booking->id,
-                    'guest_registration',
-                    $booking->preferred_language,
-                    $booking->guest_email,
-                    false,
-                    $e->getMessage()
-                );
+            $disabled = $booking->disabled_automated_messages ?? [];
+            if (!in_array('guest_registration', $disabled)) {
+                try {
+                    Mail::to($booking->guest_email)->send(new CheckinLinkMail($booking, $booking->preferred_language));
+                    
+                    // Log the automated message
+                    \App\Models\AutomatedMessageLog::logMessage(
+                        $booking->id,
+                        'guest_registration',
+                        $booking->preferred_language,
+                        $booking->guest_email,
+                        true
+                    );
+                    
+                    // Update tracking status
+                    $booking->update([
+                        'checkin_form_sent' => true,
+                        'checkin_form_sent_at' => now(),
+                    ]);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to send automatic check-in email: ' . $e->getMessage());
+                    
+                    \App\Models\AutomatedMessageLog::logMessage(
+                        $booking->id,
+                        'guest_registration',
+                        $booking->preferred_language,
+                        $booking->guest_email,
+                        false,
+                        $e->getMessage()
+                    );
+                }
             }
         }
 
@@ -197,6 +202,8 @@ class BookingController extends Controller
             'invoice_address' => 'nullable|string',
             'invoice_vat_number' => 'nullable|string|max:255',
             'invoice_accommodated_guests' => 'nullable|string',
+            'disabled_automated_messages' => 'nullable|array',
+            'disabled_automated_messages.*' => 'string|in:guest_registration,welcome,thank_you,checkout_reminder',
         ]);
 
         $booking->update($validated);

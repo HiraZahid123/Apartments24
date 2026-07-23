@@ -50,6 +50,13 @@ class SendCheckoutReminders extends Command
         $failed = 0;
 
         foreach ($bookings as $booking) {
+            // Check if checkout reminder is disabled for this booking
+            $disabled = $booking->disabled_automated_messages ?? [];
+            if (in_array('checkout_reminder', $disabled)) {
+                $this->info("Skipping checkout reminder for booking #{$booking->id} ({$booking->guest_name}) as it is disabled.");
+                continue;
+            }
+
             // Check if reminder already sent today
             $alreadySent = AutomatedMessageLog::where('booking_id', $booking->id)
                 ->where('message_type', 'checkout_reminder')
