@@ -57,10 +57,11 @@ class SendCheckoutReminders extends Command
                 continue;
             }
 
-            // Check if reminder already sent today
+            // Check if reminder already sent successfully today
             $alreadySent = AutomatedMessageLog::where('booking_id', $booking->id)
                 ->where('message_type', 'checkout_reminder')
-                ->whereDate('sent_at', $today)
+                ->where('status', 'sent')
+                ->whereDate('sent_at', $today->toDateString())
                 ->exists();
 
             if ($alreadySent) {
