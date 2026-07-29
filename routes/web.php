@@ -71,6 +71,16 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     // Guidebooks
     Route::get('apartments/{apartment}/guidebook', [App\Http\Controllers\Admin\GuidebookController::class, 'edit'])->name('apartments.guidebook.edit');
     Route::post('apartments/{apartment}/guidebook', [App\Http\Controllers\Admin\GuidebookController::class, 'update'])->name('apartments.guidebook.update');
+
+    // Trigger/Test Checkout Reminders via Browser
+    Route::get('/test-checkout-reminders', function() {
+        \Illuminate\Support\Facades\Artisan::call('send:checkout-reminders');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Command send:checkout-reminders executed.',
+            'output' => explode("\n", trim(\Illuminate\Support\Facades\Artisan::output()))
+        ]);
+    })->name('test-checkout-reminders');
 });
 
 Route::post('/admin/impersonate/leave', [App\Http\Controllers\Admin\ImpersonationController::class, 'leave'])->name('admin.impersonate.leave')->middleware('auth');

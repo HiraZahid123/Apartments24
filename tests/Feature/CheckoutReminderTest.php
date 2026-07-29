@@ -61,7 +61,7 @@ class CheckoutReminderTest extends TestCase
             'preferred_language' => 'en',
             'total_price' => 150.00,
             'service_fee' => 15.00,
-            'status' => 'checked_in',
+            'status' => 'confirmed',
             'disabled_automated_messages' => ['checkout_reminder'],
         ]);
 
@@ -76,7 +76,7 @@ class CheckoutReminderTest extends TestCase
             'preferred_language' => 'en',
             'total_price' => 180.00,
             'service_fee' => 18.00,
-            'status' => 'checked_in',
+            'status' => 'confirmed',
             'disabled_automated_messages' => [],
         ]);
 
@@ -130,7 +130,7 @@ class CheckoutReminderTest extends TestCase
             'preferred_language' => 'en',
             'total_price' => 150.00,
             'service_fee' => 15.00,
-            'status' => 'checked_in',
+            'status' => 'confirmed',
             'disabled_automated_messages' => ['checkout_reminder'],
         ]);
 
@@ -145,7 +145,7 @@ class CheckoutReminderTest extends TestCase
             'preferred_language' => 'en',
             'total_price' => 180.00,
             'service_fee' => 18.00,
-            'status' => 'checked_in',
+            'status' => 'confirmed',
             'disabled_automated_messages' => [],
         ]);
 

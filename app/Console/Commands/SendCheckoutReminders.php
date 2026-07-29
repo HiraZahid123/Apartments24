@@ -37,7 +37,7 @@ class SendCheckoutReminders extends Command
         
         $bookings = Booking::with('apartment')
             ->where('check_out_date', $today)
-            ->where('status', 'checked_in')
+            ->whereIn('status', ['confirmed', 'checked_in'])
             ->get();
 
         if ($bookings->isEmpty()) {
