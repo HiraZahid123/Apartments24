@@ -52,7 +52,7 @@ class CheckinLinkMail extends Mailable
             
             $this->templateData = $template->replaceVariables([
                 'guest_name' => $booking->guest_name,
-                'apartment_name' => $booking->linked_apartment_names,
+                'apartment_name' => $booking->apartment->name,
                 'checkin_date' => $checkinDate,
                 'checkin_link' => $checkinLink,
                 'dashboard_label' => $labels['dashboard'],
@@ -61,7 +61,7 @@ class CheckinLinkMail extends Mailable
         } else {
             // Fallback to default English
             $this->templateData = [
-                'subject' => 'Guest Registration - Apartments24 [' . $booking->linked_apartment_names . ']',
+                'subject' => 'Guest Registration - Apartments24 [' . $booking->apartment->name . ']',
                 'content' => "Hello {$booking->guest_name}!\n\nThank you for choosing Apartments24.",
                 'labels' => $labels,
             ];
