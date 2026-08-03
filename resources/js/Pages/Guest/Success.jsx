@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import {
@@ -37,7 +37,10 @@ const translations = {
         additional_guests_title: "Additional Guests",
         guests_registered: "guests registered",
         register_next: "Register Next Guest",
-        multi_guest_hint: "You can optionally register other guests staying with you."
+        multi_guest_hint: "You can optionally register other guests staying with you.",
+        guidebook_title: "Digital Guidebook",
+        guidebook_desc: "Everything you need to know about your stay, local recommendations, house rules, and more.",
+        guidebook_btn: "View Digital Guidebook"
     },
     et: {
         title: "Sisseregistreerimine õnnestus!",
@@ -60,7 +63,10 @@ const translations = {
         additional_guests_title: "Lisakülalised",
         guests_registered: "külalist registreeritud",
         register_next: "Registreeri järgmine külaline",
-        multi_guest_hint: "Saate soovi korral registreerida ka teised teiega peatuvad külalised."
+        multi_guest_hint: "Saate soovi korral registreerida ka teised teiega peatuvad külalised.",
+        guidebook_title: "Digitaalne juhis",
+        guidebook_desc: "Kogu vajalik info Teie peatumise, kohalike soovituste, kodukorra ja muu kohta.",
+        guidebook_btn: "Vaata digitaalset juhist"
     },
     ru: {
         title: "Заезд выполнен успешно!",
@@ -83,7 +89,10 @@ const translations = {
         additional_guests_title: "Дополнительные гости",
         guests_registered: "гостей зарегистрировано",
         register_next: "Зарегистрировать следующего гостя",
-        multi_guest_hint: "Вы можете по желанию зарегистрировать других гостей, проживающих с вами."
+        multi_guest_hint: "Вы можете по желанию зарегистрировать других гостей, проживающих с вами.",
+        guidebook_title: "Цифровой путеводитель",
+        guidebook_desc: "Все, что вам нужно знать о вашем пребывании, местных рекомендациях, правилах дома и многом другом.",
+        guidebook_btn: "Посмотреть цифровой путеводитель"
     }
 };
 
@@ -115,6 +124,10 @@ const RenderInstructions = ({ text }) => {
 export default function Success({ booking, checkins_count }) {
     const [lang, setLang] = useState(booking.preferred_language || 'en');
     const t = translations[lang];
+
+    useEffect(() => {
+        document.documentElement.lang = lang;
+    }, [lang]);
     const apartment = booking.apartment;
     const currentCount = Number(checkins_count || 0);
     const totalNeeded = Number(booking.number_of_guests || 1);
@@ -254,16 +267,16 @@ export default function Success({ booking, checkins_count }) {
                                 <div className="p-2 bg-white/20 rounded-xl">
                                     <Info className="w-5 h-5 text-white" />
                                 </div>
-                                <h3 className="text-xl font-black italic uppercase tracking-tight">Digital Guidebook</h3>
+                                <h3 className="text-xl font-black italic uppercase tracking-tight">{t.guidebook_title}</h3>
                             </div>
                             <p className="text-indigo-100 text-sm font-bold leading-relaxed italic">
-                                Everything you need to know about your stay, local recommendations, house rules, and more.
+                                {t.guidebook_desc}
                             </p>
                             <Link
                                 href={route('guest.guidebook', { token: booking.checkin_token })}
                                 className="w-full py-5 bg-white text-indigo-600 rounded-2xl font-black text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all shadow-lg"
                             >
-                                View Digital Guidebook <ArrowRight className="w-4 h-4" />
+                                {t.guidebook_btn} <ArrowRight className="w-4 h-4" />
                             </Link>
                         </motion.div>
 

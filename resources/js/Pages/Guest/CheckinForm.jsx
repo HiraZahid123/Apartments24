@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Head, useForm, Link } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -159,6 +159,10 @@ const translations = {
 export default function CheckinForm({ booking }) {
     const [lang, setLang] = useState(booking.preferred_language || 'en');
     const t = translations[lang];
+
+    useEffect(() => {
+        document.documentElement.lang = lang;
+    }, [lang]);
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);

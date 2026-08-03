@@ -77,6 +77,11 @@ export default function Guidebook({ booking, apartment, guidebook }) {
     const t = translations[lang];
     const sections = guidebook.sections || [];
     
+    // Sync document language tag
+    useEffect(() => {
+        document.documentElement.lang = lang;
+    }, [lang]);
+
     // Auto-scroll to top when section changes
     useEffect(() => {
         window.scrollTo(0, 0);
