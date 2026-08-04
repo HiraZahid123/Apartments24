@@ -12,7 +12,8 @@ import {
     CheckCircle,
     ChevronRight,
     Loader2,
-    FileText
+    FileText,
+    ChevronDown
 } from 'lucide-react';
 
 const translations = {
@@ -60,7 +61,8 @@ const translations = {
         invoice_address: "Address (Optional)",
         invoice_vat: "VAT number (Optional)",
         invoice_guests: "Accommodated guests names (Optional)",
-        invoice_info: "Invoice Information"
+        invoice_info: "Invoice Information",
+        select_placeholder: "Select..."
     },
     et: {
         title: "Külalise registreerimine",
@@ -106,7 +108,8 @@ const translations = {
         invoice_address: "Aadress (Valikuline)",
         invoice_vat: "Käibemaksukohustuslase number (Valikuline)",
         invoice_guests: "Majutatud külaliste nimed (Valikuline)",
-        invoice_info: "Arve teave"
+        invoice_info: "Arve teave",
+        select_placeholder: "Vali..."
     },
     ru: {
         title: "Регистрация гостя",
@@ -152,8 +155,84 @@ const translations = {
         invoice_address: "Адрес (Опционально)",
         invoice_vat: "Номер НДС (Опционально)",
         invoice_guests: "Имена проживающих гостей (Опционально)",
-        invoice_info: "Информация о счете"
+        invoice_info: "Информация о счете",
+        select_placeholder: "Выбрать..."
     }
+};
+
+const CustomSelect = ({ value, onChange, options, placeholder, className, required }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const containerRef = useRef(null);
+
+    const toggle = (e) => {
+        e.preventDefault();
+        setIsOpen(!isOpen);
+    };
+
+    const handleSelect = (val) => {
+        onChange({ target: { value: val } });
+        setIsOpen(false);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (containerRef.current && !containerRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const selectedOption = options.find(opt => String(opt.value) === String(value));
+    const displayLabel = selectedOption ? selectedOption.label : placeholder;
+
+    return (
+        <div ref={containerRef} className="relative w-full">
+            <button
+                type="button"
+                onClick={toggle}
+                className={`w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-4 focus:ring-4 focus:ring-orange-100 focus:border-brand-orange transition-all font-bold text-slate-900 text-left flex justify-between items-center ${isOpen ? 'ring-4 ring-orange-100 border-brand-orange bg-white' : ''} ${className || ''}`}
+            >
+                <span className={value !== '' && value !== undefined && value !== null ? 'text-slate-900' : 'text-slate-400 font-normal'}>
+                    {displayLabel}
+                </span>
+                <ChevronDown className="w-5 h-5 text-slate-400 transition-transform duration-200" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
+            </button>
+            
+            {isOpen && (
+                <div className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl max-h-60 overflow-y-auto">
+                    {options.map((opt) => (
+                        <button
+                            key={opt.value}
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleSelect(opt.value);
+                            }}
+                            className={`w-full px-5 py-3 text-left font-bold text-slate-700 hover:bg-slate-50 transition-colors ${String(opt.value) === String(value) ? 'bg-orange-50/50 text-brand-orange font-black' : ''}`}
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
+            )}
+            
+            <select
+                value={value}
+                required={required}
+                onChange={() => {}}
+                style={{ position: 'absolute', width: '1px', height: '1px', padding: '0', margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', border: '0' }}
+                tabIndex={-1}
+                aria-hidden="true"
+            >
+                <option value="">{placeholder}</option>
+                {options.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+            </select>
+        </div>
+    );
 };
 
 export default function CheckinForm({ booking }) {
@@ -271,6 +350,18 @@ export default function CheckinForm({ booking }) {
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
+    const dayOptions = days.map(d => ({ value: String(d), label: String(d) }));
+    const monthOptions = months.map(m => ({ value: String(m), label: String(m) }));
+    const yearOptions = years.map(y => ({ value: String(y), label: String(y) }));
+
+    const purposeOptions = [
+        { value: 'vacation', label: t.purpose_vacation },
+        { value: 'business', label: t.purpose_business },
+        { value: 'other', label: t.purpose_other }
+    ];
+
+    const minorOptions = Array.from({ length: 11 }, (_, i) => ({ value: String(i), label: String(i) }));
+
     return (
         <div className="min-h-screen bg-slate-50 font-sans selection:bg-orange-100 selection:text-orange-900 pb-20">
             <Head title={t.title} />
@@ -365,33 +456,27 @@ export default function CheckinForm({ booking }) {
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t.dob}</label>
                                 <div className="grid grid-cols-3 gap-3">
-                                    <select
+                                    <CustomSelect
                                         value={data.dob_day}
                                         onChange={e => setData('dob_day', e.target.value)}
-                                        className="w-full bg-slate-50 border-slate-200 rounded-2xl py-4 px-4 focus:ring-4 focus:ring-orange-100 focus:border-brand-orange transition-all font-bold text-slate-900 appearance-none"
+                                        options={dayOptions}
+                                        placeholder={t.day}
                                         required
-                                    >
-                                        <option value="">{t.day}</option>
-                                        {days.map(d => <option key={d} value={d}>{d}</option>)}
-                                    </select>
-                                    <select
+                                    />
+                                    <CustomSelect
                                         value={data.dob_month}
                                         onChange={e => setData('dob_month', e.target.value)}
-                                        className="w-full bg-slate-50 border-slate-200 rounded-2xl py-4 px-4 focus:ring-4 focus:ring-orange-100 focus:border-brand-orange transition-all font-bold text-slate-900 appearance-none"
+                                        options={monthOptions}
+                                        placeholder={t.month}
                                         required
-                                    >
-                                        <option value="">{t.month}</option>
-                                        {months.map(m => <option key={m} value={m}>{m}</option>)}
-                                    </select>
-                                    <select
+                                    />
+                                    <CustomSelect
                                         value={data.dob_year}
                                         onChange={e => setData('dob_year', e.target.value)}
-                                        className="w-full bg-slate-50 border-slate-200 rounded-2xl py-4 px-4 focus:ring-4 focus:ring-orange-100 focus:border-brand-orange transition-all font-bold text-slate-900 appearance-none"
+                                        options={yearOptions}
+                                        placeholder={t.year}
                                         required
-                                    >
-                                        <option value="">{t.year}</option>
-                                        {years.map(y => <option key={y} value={y}>{y}</option>)}
-                                    </select>
+                                    />
                                 </div>
                                 {errors.date_of_birth && <p className="text-red-500 text-xs font-bold mt-1">{errors.date_of_birth}</p>}
                             </div>
@@ -427,30 +512,22 @@ export default function CheckinForm({ booking }) {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t.purpose_of_travel}</label>
-                                <select
+                                <CustomSelect
                                     value={data.purpose_of_travel}
                                     onChange={e => setData('purpose_of_travel', e.target.value)}
-                                    className="w-full bg-slate-50 border-slate-200 rounded-2xl py-4 px-5 focus:ring-4 focus:ring-orange-100 focus:border-brand-orange transition-all font-bold text-slate-900 appearance-none"
-                                >
-                                    <option value="">Select...</option>
-                                    <option value="vacation">{t.purpose_vacation}</option>
-                                    <option value="business">{t.purpose_business}</option>
-                                    <option value="other">{t.purpose_other}</option>
-                                </select>
+                                    options={purposeOptions}
+                                    placeholder={t.select_placeholder || "Select..."}
+                                />
                                 {errors.purpose_of_travel && <p className="text-red-500 text-xs font-bold mt-1">{errors.purpose_of_travel}</p>}
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t.number_of_minors}</label>
-                                <select
+                                <CustomSelect
                                     value={data.number_of_minors}
                                     onChange={e => setData('number_of_minors', e.target.value)}
-                                    className="w-full bg-slate-50 border-slate-200 rounded-2xl py-4 px-5 focus:ring-4 focus:ring-orange-100 focus:border-brand-orange transition-all font-bold text-slate-900 appearance-none"
-                                >
-                                    <option value="">Select...</option>
-                                    {Array.from({ length: 11 }, (_, i) => (
-                                        <option key={i} value={i}>{i}</option>
-                                    ))}
-                                </select>
+                                    options={minorOptions}
+                                    placeholder={t.select_placeholder || "Select..."}
+                                />
                                 {errors.number_of_minors && <p className="text-red-500 text-xs font-bold mt-1">{errors.number_of_minors}</p>}
                             </div>
                         </div>
