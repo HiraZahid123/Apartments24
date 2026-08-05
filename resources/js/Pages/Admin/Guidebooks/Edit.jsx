@@ -43,6 +43,8 @@ const iconOptions = [
 
 export default function Edit({ auth, apartment, guidebook }) {
     const [activeLang, setActiveLang] = useState('en');
+    const [fileInputKey, setFileInputKey] = useState(0);
+    const [savedBannerImage, setSavedBannerImage] = useState(guidebook.banner_image || null);
     
     const { data, setData, post, processing, errors } = useForm({
         welcome_title: guidebook.welcome_title || { en: '', et: '', ru: '' },
@@ -137,7 +139,15 @@ export default function Edit({ auth, apartment, guidebook }) {
         e.preventDefault();
         // Use post since we might be uploading an image
         post(route('admin.apartments.guidebook.update', apartment.id), {
-            onSuccess: () => toast.success('Guidebook updated successfully'),
+            onSuccess: () => {
+                toast.success('Guidebook updated successfully');
+                // Reset banner image state so a new image can be uploaded
+                if (data.banner_image) {
+                    setSavedBannerImage(URL.createObjectURL(data.banner_image));
+                }
+                setData('banner_image', null);
+                setFileInputKey(k => k + 1);
+            },
         });
     };
 
@@ -210,8 +220,8 @@ export default function Edit({ auth, apartment, guidebook }) {
                                 <div className="relative group rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-200 aspect-video flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 transition-all">
                                     {data.banner_image ? (
                                          <img src={URL.createObjectURL(data.banner_image)} className="absolute inset-0 w-full h-full object-cover" />
-                                    ) : guidebook.banner_image ? (
-                                        <img src={`/storage/${guidebook.banner_image}`} className="absolute inset-0 w-full h-full object-cover" />
+                                    ) : savedBannerImage ? (
+                                        <img src={savedBannerImage.startsWith('blob:') ? savedBannerImage : `/storage/${savedBannerImage}`} className="absolute inset-0 w-full h-full object-cover" />
                                     ) : (
                                         <>
                                             <ImageIcon className="w-10 h-10 text-slate-300 mb-2" />
@@ -219,11 +229,27 @@ export default function Edit({ auth, apartment, guidebook }) {
                                         </>
                                     )}
                                     <input
+                                        key={fileInputKey}
                                         type="file"
                                         onChange={e => setData('banner_image', e.target.files[0])}
                                         className="absolute inset-0 opacity-0 cursor-pointer z-10"
                                         accept="image/*"
                                     />
+                                    {(data.banner_image || savedBannerImage) && (
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setData('banner_image', null);
+                                                setSavedBannerImage(null);
+                                                setFileInputKey(k => k + 1);
+                                            }}
+                                            className="absolute top-2 right-2 p-1.5 bg-white/80 hover:bg-white text-rose-500 rounded-lg shadow-sm z-20 backdrop-blur-sm transition-all"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -364,7 +390,9 @@ export default function Edit({ auth, apartment, guidebook }) {
                                                                             const newSections = [...data.sections];
                                                                             const sec = newSections.find(s => s.id === section.id);
                                                                             const itm = sec.items.find(i => i.id === item.id);
+                                                                            // Mark as explicitly removed so controller knows to delete it
                                                                             itm.image = null;
+                                                                            itm.image_removed = true;
                                                                             setData('sections', newSections);
                                                                         }}
                                                                         className="absolute top-2 right-2 p-1.5 bg-white/80 hover:bg-white text-rose-500 rounded-lg shadow-sm z-20 backdrop-blur-sm transition-all"

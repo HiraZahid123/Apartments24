@@ -79,18 +79,18 @@ class GuidebookController extends Controller
         foreach ($sections as $sIndex => &$section) {
             foreach ($section['items'] as $iIndex => &$item) {
                 if (!isset($files['sections'][$sIndex]['items'][$iIndex]['image'])) {
+                    // No new file was uploaded for this item — always preserve the existing image from DB
                     $oldItem = collect($oldSections)->flatMap(fn($s) => $s['items'] ?? [])->firstWhere('id', $item['id']);
-                    if ($oldItem && isset($oldItem['image'])) {
-                        if (isset($item['image']) && is_string($item['image'])) {
-                            $item['image'] = $oldItem['image'];
-                        } else {
-                            // explicit remove or not kept
-                            $item['image'] = null;
-                        }
-                    } else {
-                        $item['image'] = null;
-                    }
+                    $item['image'] = $oldItem['image'] ?? null;
                 }
+                // If the item has image_removed flag set, explicitly clear the image
+                if (isset($item['image_removed']) && $item['image_removed']) {
+                    if (isset($item['image']) && is_string($item['image'])) {
+                        Storage::disk('public')->delete($item['image']);
+                    }
+                    $item['image'] = null;
+                }
+                unset($item['image_removed']);
             }
         }
 

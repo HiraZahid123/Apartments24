@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Guest;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\GuestCheckin;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -262,7 +263,17 @@ class CheckinController extends Controller
         return Inertia::render('Guest/Guidebook', [
             'booking' => $booking,
             'apartment' => $apartment,
-            'guidebook' => $guidebook
+            'guidebook' => $guidebook,
+            'contactSettings' => Setting::whereIn('key', [
+                'contact_phone',
+                'contact_email',
+                'contact_description_en',
+                'contact_description_et',
+                'contact_description_ru',
+                'contact_hours_en',
+                'contact_hours_et',
+                'contact_hours_ru',
+            ])->pluck('value', 'key')->toArray(),
         ]);
     }
 }
