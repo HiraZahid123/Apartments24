@@ -44,6 +44,7 @@ class GuidebookController extends Controller
             'welcome_title' => 'required|array',
             'welcome_message' => 'required|array',
             'banner_image' => 'nullable|image|max:10240',
+            'banner_image_removed' => 'nullable|boolean',
             'sections' => 'required|array',
         ]);
 
@@ -54,8 +55,16 @@ class GuidebookController extends Controller
             }
             $validated['banner_image'] = $request->file('banner_image')->store('guidebooks', 'public');
         } else {
-            // Keep existing image if not provided
-            unset($validated['banner_image']);
+            // Check if banner image was explicitly removed
+            if ($request->boolean('banner_image_removed')) {
+                if ($guidebook->banner_image) {
+                    Storage::disk('public')->delete($guidebook->banner_image);
+                }
+                $validated['banner_image'] = null;
+            } else {
+                // Keep existing image if not provided
+                unset($validated['banner_image']);
+            }
         }
 
         $sections = $request->input('sections', []);
@@ -95,6 +104,9 @@ class GuidebookController extends Controller
         }
 
         $validated['sections'] = $sections;
+
+        // Remove the helper flag — it should not be persisted to the database
+        unset($validated['banner_image_removed']);
 
         $guidebook->update($validated);
 

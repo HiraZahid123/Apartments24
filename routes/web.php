@@ -81,6 +81,24 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
             'output' => explode("\n", trim(\Illuminate\Support\Facades\Artisan::output()))
         ]);
     })->name('test-checkout-reminders');
+
+    // Storage link helper — run this on live server if uploaded images are not showing
+    Route::get('/link-storage', function() {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('storage:link');
+            $output = trim(\Illuminate\Support\Facades\Artisan::output());
+            return response()->json([
+                'status' => 'success',
+                'message' => 'storage:link executed successfully.',
+                'output' => $output ?: 'The [public/storage] link has been connected to [storage/app/public].',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    })->name('link-storage');
 });
 
 Route::post('/admin/impersonate/leave', [App\Http\Controllers\Admin\ImpersonationController::class, 'leave'])->name('admin.impersonate.leave')->middleware('auth');

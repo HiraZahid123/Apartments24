@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { 
@@ -50,8 +50,23 @@ export default function Edit({ auth, apartment, guidebook }) {
         welcome_title: guidebook.welcome_title || { en: '', et: '', ru: '' },
         welcome_message: guidebook.welcome_message || { en: '', et: '', ru: '' },
         banner_image: null,
+        banner_image_removed: false,
         sections: guidebook.sections || [],
     });
+
+    // Sync state when the guidebook prop changes (e.g. after a successful save / Inertia revisit)
+    useEffect(() => {
+        setSavedBannerImage(guidebook.banner_image || null);
+        setData(prev => ({
+            ...prev,
+            welcome_title: guidebook.welcome_title || { en: '', et: '', ru: '' },
+            welcome_message: guidebook.welcome_message || { en: '', et: '', ru: '' },
+            banner_image: null,
+            banner_image_removed: false,
+            sections: guidebook.sections || [],
+        }));
+        setFileInputKey(k => k + 1);
+    }, [guidebook.id, guidebook.banner_image, guidebook.updated_at]);
 
     const addSection = () => {
         const newSection = {
@@ -141,11 +156,8 @@ export default function Edit({ auth, apartment, guidebook }) {
         post(route('admin.apartments.guidebook.update', apartment.id), {
             onSuccess: () => {
                 toast.success('Guidebook updated successfully');
-                // Reset banner image state so a new image can be uploaded
-                if (data.banner_image) {
-                    setSavedBannerImage(URL.createObjectURL(data.banner_image));
-                }
-                setData('banner_image', null);
+                // State will be synced by the useEffect when Inertia refreshes the guidebook prop
+                setData(prev => ({ ...prev, banner_image: null, banner_image_removed: false }));
                 setFileInputKey(k => k + 1);
             },
         });
@@ -241,7 +253,12 @@ export default function Edit({ auth, apartment, guidebook }) {
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                setData('banner_image', null);
+                                                // If there's a saved (server-side) image, mark it for removal on save
+                                                if (savedBannerImage && !data.banner_image) {
+                                                    setData(prev => ({ ...prev, banner_image: null, banner_image_removed: true }));
+                                                } else {
+                                                    setData(prev => ({ ...prev, banner_image: null, banner_image_removed: false }));
+                                                }
                                                 setSavedBannerImage(null);
                                                 setFileInputKey(k => k + 1);
                                             }}
