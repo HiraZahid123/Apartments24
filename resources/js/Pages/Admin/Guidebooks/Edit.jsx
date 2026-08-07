@@ -152,8 +152,10 @@ export default function Edit({ auth, apartment, guidebook }) {
 
     const submit = (e) => {
         e.preventDefault();
-        // Use post since we might be uploading an image
+        // forceFormData ensures Inertia always uses multipart/form-data so the
+        // backend can see file uploads on every save — not just the first one.
         post(route('admin.apartments.guidebook.update', apartment.id), {
+            forceFormData: true,
             onSuccess: () => {
                 toast.success('Guidebook updated successfully');
                 // State will be synced by the useEffect when Inertia refreshes the guidebook prop
@@ -243,7 +245,19 @@ export default function Edit({ auth, apartment, guidebook }) {
                                     <input
                                         key={fileInputKey}
                                         type="file"
-                                        onChange={e => setData('banner_image', e.target.files[0])}
+                                        onChange={e => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                // Clear the "removed" flag and set the new file
+                                                setData(prev => ({
+                                                    ...prev,
+                                                    banner_image: file,
+                                                    banner_image_removed: false,
+                                                }));
+                                                // Reset input key so the same file can be re-selected later
+                                                setFileInputKey(k => k + 1);
+                                            }
+                                        }}
                                         className="absolute inset-0 opacity-0 cursor-pointer z-10"
                                         accept="image/*"
                                     />
