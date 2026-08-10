@@ -40,12 +40,19 @@ class GuidebookController extends Controller
     {
         $guidebook = $apartment->guidebook;
 
+        if (!$guidebook) {
+            $guidebook = Guidebook::create(['apartment_id' => $apartment->id, 'sections' => []]);
+        }
+
+        // "sections" must stay nullable: a guidebook with no sections is serialized
+        // as an empty array, which multipart/form-data drops entirely — "required"
+        // would then reject the whole save, banner image included.
         $validated = $request->validate([
             'welcome_title' => 'required|array',
             'welcome_message' => 'required|array',
             'banner_image' => 'nullable|image|max:10240',
             'banner_image_removed' => 'nullable|boolean',
-            'sections' => 'required|array',
+            'sections' => 'nullable|array',
         ]);
 
         if ($request->hasFile('banner_image')) {
@@ -86,6 +93,9 @@ class GuidebookController extends Controller
         // Keep old item images if not explicitly removed or replaced
         $oldSections = $guidebook->sections ?? [];
         foreach ($sections as $sIndex => &$section) {
+            // A section with no items is dropped from the form data, so the key may be absent
+            $section['items'] = $section['items'] ?? [];
+
             foreach ($section['items'] as $iIndex => &$item) {
                 if (!isset($files['sections'][$sIndex]['items'][$iIndex]['image'])) {
                     // No new file was uploaded for this item — always preserve the existing image from DB
@@ -101,7 +111,9 @@ class GuidebookController extends Controller
                 }
                 unset($item['image_removed']);
             }
+            unset($item);
         }
+        unset($section);
 
         $validated['sections'] = $sections;
 

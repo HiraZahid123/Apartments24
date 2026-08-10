@@ -84,18 +84,42 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
 
     // Storage link helper — run this on live server if uploaded images are not showing
     Route::get('/link-storage', function() {
+        $link = public_path('storage');
+        $notes = [];
+
         try {
+            // A git/zip deploy checks `public/storage` out as a real (empty) directory,
+            // and storage:link then refuses to replace it. Clear it out first, but only
+            // when it holds nothing except the placeholder .gitignore.
+            if (is_dir($link) && !is_link($link)) {
+                $leftovers = array_diff(scandir($link) ?: [], ['.', '..', '.gitignore']);
+
+                if (empty($leftovers)) {
+                    @unlink($link . DIRECTORY_SEPARATOR . '.gitignore');
+                    @rmdir($link);
+                    $notes[] = 'Removed the placeholder public/storage directory that was blocking the symlink.';
+                } else {
+                    $notes[] = 'public/storage is a real directory holding ' . count($leftovers) . ' item(s) — left untouched.';
+                }
+            }
+
             \Illuminate\Support\Facades\Artisan::call('storage:link');
             $output = trim(\Illuminate\Support\Facades\Artisan::output());
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'storage:link executed successfully.',
                 'output' => $output ?: 'The [public/storage] link has been connected to [storage/app/public].',
+                'notes' => $notes,
+                'symlink_active' => is_link($link),
+                // Images are served by the /storage fallback route even when this is false.
+                'fallback_route_active' => true,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
+                'notes' => $notes,
             ], 500);
         }
     })->name('link-storage');
@@ -119,5 +143,8 @@ Route::prefix('guest')->name('guest.')->group(function () {
     // Guidebook
     Route::get('/guidebook/{token}', [App\Http\Controllers\Guest\CheckinController::class, 'guidebook'])->name('guidebook');
 });
+
+// The /storage/* fallback that serves uploads when public/storage is not a working
+// symlink is registered middleware-free in bootstrap/app.php.
 
 require __DIR__ . '/auth.php';

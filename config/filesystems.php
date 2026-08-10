@@ -33,7 +33,10 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Off on purpose: this registered a GET /storage/{path} route serving
+            // storage/app/private, which both exposed private files and shadowed
+            // the /storage fallback that serves real uploads (see bootstrap/app.php).
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

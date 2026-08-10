@@ -45,7 +45,12 @@ export default function Edit({ auth, apartment, guidebook }) {
     const [activeLang, setActiveLang] = useState('en');
     const [fileInputKey, setFileInputKey] = useState(0);
     const [savedBannerImage, setSavedBannerImage] = useState(guidebook.banner_image || null);
-    
+    // Images whose file is missing on the server. Without this a broken <img> would
+    // cover the drop zone with an invisible box, hiding the "click to upload" prompt
+    // and making it look like the image can no longer be changed.
+    const [bannerBroken, setBannerBroken] = useState(false);
+    const [brokenItemImages, setBrokenItemImages] = useState({});
+
     const { data, setData, post, processing, errors } = useForm({
         welcome_title: guidebook.welcome_title || { en: '', et: '', ru: '' },
         welcome_message: guidebook.welcome_message || { en: '', et: '', ru: '' },
@@ -54,9 +59,24 @@ export default function Edit({ auth, apartment, guidebook }) {
         sections: guidebook.sections || [],
     });
 
+    // Local preview for a freshly picked banner file. Built once per file (and
+    // revoked afterwards) rather than on every render.
+    const [bannerPreview, setBannerPreview] = useState(null);
+    useEffect(() => {
+        if (!data.banner_image) {
+            setBannerPreview(null);
+            return;
+        }
+        const url = URL.createObjectURL(data.banner_image);
+        setBannerPreview(url);
+        return () => URL.revokeObjectURL(url);
+    }, [data.banner_image]);
+
     // Sync state when the guidebook prop changes (e.g. after a successful save / Inertia revisit)
     useEffect(() => {
         setSavedBannerImage(guidebook.banner_image || null);
+        setBannerBroken(false);
+        setBrokenItemImages({});
         setData(prev => ({
             ...prev,
             welcome_title: guidebook.welcome_title || { en: '', et: '', ru: '' },
@@ -232,14 +252,20 @@ export default function Edit({ auth, apartment, guidebook }) {
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Banner Image</label>
                                 <div className="relative group rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-200 aspect-video flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 transition-all">
-                                    {data.banner_image ? (
-                                         <img src={URL.createObjectURL(data.banner_image)} className="absolute inset-0 w-full h-full object-cover" />
-                                    ) : savedBannerImage ? (
-                                        <img src={savedBannerImage.startsWith('blob:') ? savedBannerImage : `/storage/${savedBannerImage}`} className="absolute inset-0 w-full h-full object-cover" />
+                                    {bannerPreview ? (
+                                         <img src={bannerPreview} className="absolute inset-0 w-full h-full object-cover" />
+                                    ) : savedBannerImage && !bannerBroken ? (
+                                        <img
+                                            src={`/storage/${savedBannerImage}`}
+                                            onError={() => setBannerBroken(true)}
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                        />
                                     ) : (
                                         <>
                                             <ImageIcon className="w-10 h-10 text-slate-300 mb-2" />
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Click to upload</span>
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                                {bannerBroken ? 'Image missing — click to re-upload' : 'Click to upload'}
+                                            </span>
                                         </>
                                     )}
                                     <input
@@ -389,12 +415,18 @@ export default function Edit({ auth, apartment, guidebook }) {
                                                             <div className="relative group rounded-2xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-200 aspect-[3/1] flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 transition-all">
                                                                 {item.image && typeof item.image !== 'string' ? (
                                                                      <img src={URL.createObjectURL(item.image)} className="absolute inset-0 w-full h-full object-cover" />
-                                                                ) : item.image && typeof item.image === 'string' ? (
-                                                                    <img src={`/storage/${item.image}`} className="absolute inset-0 w-full h-full object-cover" />
+                                                                ) : item.image && typeof item.image === 'string' && !brokenItemImages[`${section.id}:${item.id}`] ? (
+                                                                    <img
+                                                                        src={`/storage/${item.image}`}
+                                                                        onError={() => setBrokenItemImages(prev => ({ ...prev, [`${section.id}:${item.id}`]: true }))}
+                                                                        className="absolute inset-0 w-full h-full object-cover"
+                                                                    />
                                                                 ) : (
                                                                     <>
                                                                         <ImageIcon className="w-8 h-8 text-slate-300 mb-2" />
-                                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Click to upload image</span>
+                                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                                                            {brokenItemImages[`${section.id}:${item.id}`] ? 'Image missing — click to re-upload' : 'Click to upload image'}
+                                                                        </span>
                                                                     </>
                                                                 )}
                                                                 <input

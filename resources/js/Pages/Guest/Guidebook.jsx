@@ -87,7 +87,9 @@ export default function Guidebook({ booking, apartment, guidebook, contactSettin
     const [lang, setLang] = useState(booking.preferred_language || 'en');
     const [activeSection, setActiveSection] = useState('home');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    
+    // Fall back to the gradient hero if the banner file cannot be loaded
+    const [bannerBroken, setBannerBroken] = useState(false);
+
     const t = translations[lang];
     const sections = guidebook.sections || [];
     
@@ -269,10 +271,11 @@ export default function Guidebook({ booking, apartment, guidebook, contactSettin
                                 >
                                     {/* Banner */}
                                     <div className="relative h-80 rounded-[3rem] overflow-hidden shadow-2xl">
-                                        {guidebook.banner_image ? (
-                                            <img 
-                                                src={`/storage/${guidebook.banner_image}`} 
-                                                alt={apartment.name} 
+                                        {guidebook.banner_image && !bannerBroken ? (
+                                            <img
+                                                src={`/storage/${guidebook.banner_image}`}
+                                                alt={apartment.name}
+                                                onError={() => setBannerBroken(true)}
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
@@ -404,7 +407,12 @@ export default function Guidebook({ booking, apartment, guidebook, contactSettin
                                                         <div className="text-slate-600 text-lg leading-relaxed font-medium whitespace-pre-line prose prose-indigo max-w-none">
                                                             {item.image && (
                                                                 <div className="mb-6 rounded-3xl overflow-hidden border border-slate-100 shadow-sm aspect-video">
-                                                                    <img src={`/storage/${item.image}`} alt="" className="w-full h-full object-cover" />
+                                                                    <img
+                                                                        src={`/storage/${item.image}`}
+                                                                        alt=""
+                                                                        onError={e => { e.currentTarget.closest('div').style.display = 'none'; }}
+                                                                        className="w-full h-full object-cover"
+                                                                    />
                                                                 </div>
                                                             )}
                                                             {getTranslation(item.content)}
