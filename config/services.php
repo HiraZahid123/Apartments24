@@ -40,4 +40,8 @@ return [
     'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
 ],
 
+'cleaning_team' => [
+    'email' => env('CLEANING_TEAM_EMAIL', 'hk@apartments24office.ee'),
+],
+
 ];

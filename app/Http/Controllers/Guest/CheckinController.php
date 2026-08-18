@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\GuestWelcomeMail;
 use App\Mail\GuestGoodbyeMail;
+use App\Mail\CleaningTeamCheckoutMail;
 
 class CheckinController extends Controller
 {
@@ -204,7 +205,14 @@ class CheckinController extends Controller
         try {
             $admins = \App\Models\User::where('user_type', 'admin')->get();
             \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\GuestCheckoutNotification($booking));
- 
+
+            // Notify the cleaning team that the apartment is now empty
+            try {
+                Mail::to(config('services.cleaning_team.email'))->send(new CleaningTeamCheckoutMail($booking));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send cleaning team departure alert: ' . $e->getMessage());
+            }
+
             // Send Guest Goodbye Email with language support if not disabled
             $disabled = $booking->disabled_automated_messages ?? [];
             if (!in_array('thank_you', $disabled)) {

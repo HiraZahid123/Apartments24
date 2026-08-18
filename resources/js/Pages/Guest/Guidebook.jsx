@@ -52,6 +52,16 @@ const translations = {
         call_host: "Call Host",
         email_us: "Email Us",
         service_hours: "Service Hours",
+        wifi_access: "WiFi Access",
+        stay_connected: "Stay Connected",
+        network: "Network",
+        password: "Password",
+        location: "Location",
+        get_directions: "Get Directions",
+        explore_your_stay: "Explore Your Stay",
+        view_details: "View details",
+        section_info: "Section Information",
+        back_to_home: "Back to home",
     },
     et: {
         welcome: "Tere tulemast",
@@ -66,6 +76,16 @@ const translations = {
         call_host: "Helista",
         email_us: "Saada e-kiri",
         service_hours: "Teenindusaeg",
+        wifi_access: "WiFi ligipääs",
+        stay_connected: "Püsi ühenduses",
+        network: "Võrk",
+        password: "Parool",
+        location: "Asukoht",
+        get_directions: "Vaata suunda",
+        explore_your_stay: "Avasta oma viibimist",
+        view_details: "Vaata detaile",
+        section_info: "Sektsiooni info",
+        back_to_home: "Tagasi avalehele",
     },
     ru: {
         welcome: "Добро пожаловать",
@@ -80,6 +100,16 @@ const translations = {
         call_host: "Позвонить",
         email_us: "Написать",
         service_hours: "Часы работы",
+        wifi_access: "Доступ к Wi-Fi",
+        stay_connected: "Оставайтесь на связи",
+        network: "Сеть",
+        password: "Пароль",
+        location: "Местоположение",
+        get_directions: "Проложить маршрут",
+        explore_your_stay: "Изучите своё проживание",
+        view_details: "Подробнее",
+        section_info: "Информация о разделе",
+        back_to_home: "Назад на главную",
     }
 };
 
@@ -307,17 +337,17 @@ export default function Guidebook({ booking, apartment, guidebook, contactSettin
                                                     <Wifi className="w-6 h-6" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-black text-slate-900 uppercase tracking-tight">WiFi Access</h3>
-                                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Stay Connected</p>
+                                                    <h3 className="font-black text-slate-900 uppercase tracking-tight">{t.wifi_access}</h3>
+                                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{t.stay_connected}</p>
                                                 </div>
                                             </div>
                                             <div className="space-y-3">
                                                 <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
-                                                    <span className="text-[10px] font-black text-slate-400 uppercase">Network</span>
+                                                    <span className="text-[10px] font-black text-slate-400 uppercase">{t.network}</span>
                                                     <span className="text-sm font-black text-slate-900">{apartment.wifi_ssid || 'Apartments24_Guest'}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
-                                                    <span className="text-[10px] font-black text-slate-400 uppercase">Password</span>
+                                                    <span className="text-[10px] font-black text-slate-400 uppercase">{t.password}</span>
                                                     <span className="text-sm font-black text-slate-900">{apartment.wifi_password || 'Welcome24'}</span>
                                                 </div>
                                             </div>
@@ -329,26 +359,26 @@ export default function Guidebook({ booking, apartment, guidebook, contactSettin
                                                     <MapPin className="w-6 h-6" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-black text-slate-900 uppercase tracking-tight">Location</h3>
+                                                    <h3 className="font-black text-slate-900 uppercase tracking-tight">{t.location}</h3>
                                                     <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{apartment.city}</p>
                                                 </div>
                                             </div>
                                             <p className="text-sm font-bold text-slate-600 leading-relaxed italic mb-4">
                                                 {apartment.address}
                                             </p>
-                                            <a 
+                                            <a
                                                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(apartment.address + ', ' + apartment.city)}`}
                                                 target="_blank"
                                                 className="inline-flex items-center gap-2 text-indigo-600 font-black uppercase tracking-widest text-[10px] hover:underline"
                                             >
-                                                <Navigation className="w-3 h-3" /> Get Directions
+                                                <Navigation className="w-3 h-3" /> {t.get_directions}
                                             </a>
                                         </div>
                                     </div>
 
                                     {/* Menu Preview */}
                                     <div className="space-y-6">
-                                        <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Explore Your Stay</h2>
+                                        <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">{t.explore_your_stay}</h2>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {sections.map(section => (
                                                 <button
@@ -361,7 +391,7 @@ export default function Guidebook({ booking, apartment, guidebook, contactSettin
                                                     </div>
                                                     <div className="flex-1">
                                                         <h3 className="font-black text-slate-900 uppercase tracking-tight">{getTranslation(section.title)}</h3>
-                                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">View details</p>
+                                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.view_details}</p>
                                                     </div>
                                                     <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
                                                 </button>
@@ -387,7 +417,7 @@ export default function Guidebook({ booking, apartment, guidebook, contactSettin
                                                     <h1 className="text-4xl lg:text-5xl font-black text-slate-900 italic uppercase tracking-tighter mb-2">
                                                         {getTranslation(section.title)}
                                                     </h1>
-                                                    <p className="text-slate-400 font-black uppercase tracking-widest text-xs">Section Information</p>
+                                                    <p className="text-slate-400 font-black uppercase tracking-widest text-xs">{t.section_info}</p>
                                                 </div>
                                             </div>
 
@@ -425,7 +455,7 @@ export default function Guidebook({ booking, apartment, guidebook, contactSettin
                                                 onClick={() => setActiveSection('home')}
                                                 className="inline-flex items-center gap-2 text-slate-400 hover:text-indigo-600 font-black uppercase tracking-widest text-xs transition-colors"
                                             >
-                                                <ArrowLeft className="w-4 h-4" /> Back to home
+                                                <ArrowLeft className="w-4 h-4" /> {t.back_to_home}
                                             </button>
                                         </div>
                                     ))}
