@@ -253,13 +253,25 @@ export default function Edit({ auth, apartment, guidebook }) {
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Banner Image</label>
                                 <div className="relative group rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-200 aspect-video flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 transition-all">
                                     {bannerPreview ? (
-                                         <img src={bannerPreview} className="absolute inset-0 w-full h-full object-cover" />
+                                        <>
+                                            <img src={bannerPreview} className="absolute inset-0 w-full h-full object-cover" />
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all">
+                                                <ImageIcon className="w-6 h-6 text-white" />
+                                                <span className="text-[10px] font-black text-white uppercase tracking-widest">Click to change</span>
+                                            </div>
+                                        </>
                                     ) : savedBannerImage && !bannerBroken ? (
-                                        <img
-                                            src={`/storage/${savedBannerImage}`}
-                                            onError={() => setBannerBroken(true)}
-                                            className="absolute inset-0 w-full h-full object-cover"
-                                        />
+                                        <>
+                                            <img
+                                                src={`/storage/${savedBannerImage}`}
+                                                onError={() => setBannerBroken(true)}
+                                                className="absolute inset-0 w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all">
+                                                <ImageIcon className="w-6 h-6 text-white" />
+                                                <span className="text-[10px] font-black text-white uppercase tracking-widest">Click to change</span>
+                                            </div>
+                                        </>
                                     ) : (
                                         <>
                                             <ImageIcon className="w-10 h-10 text-slate-300 mb-2" />
