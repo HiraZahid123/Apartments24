@@ -61,6 +61,15 @@ class GuidebookController extends Controller
                 Storage::disk('public')->delete($guidebook->banner_image);
             }
             $validated['banner_image'] = $request->file('banner_image')->store('guidebooks', 'public');
+        } elseif ($request->file('banner_image')) {
+            // A file was submitted but PHP rejected it before it ever reached validation —
+            // almost always because it exceeds upload_max_filesize/post_max_size. Without
+            // this check the request falls into the "no file provided" branch below and
+            // silently keeps the old banner, leaving the admin with no idea why their new
+            // image "didn't take".
+            return back()->withErrors([
+                'banner_image' => 'The banner image could not be uploaded — it may be too large for the server to accept.',
+            ]);
         } else {
             // Check if banner image was explicitly removed
             if ($request->boolean('banner_image_removed')) {

@@ -182,6 +182,12 @@ export default function Edit({ auth, apartment, guidebook }) {
                 setData(prev => ({ ...prev, banner_image: null, banner_image_removed: false }));
                 setFileInputKey(k => k + 1);
             },
+            onError: (formErrors) => {
+                // Without this, a rejected banner_image (too large / wrong file type) fails
+                // validation and the whole save silently no-ops — the old image just stays
+                // put with no indication why. Surface exactly what went wrong.
+                toast.error(formErrors.banner_image || Object.values(formErrors)[0] || 'Failed to update guidebook. Please check the form for errors.');
+            },
         });
     };
 
@@ -320,6 +326,10 @@ export default function Edit({ auth, apartment, guidebook }) {
                                         </button>
                                     )}
                                 </div>
+                                {errors.banner_image && (
+                                    <p className="text-rose-500 text-xs font-bold">{errors.banner_image}</p>
+                                )}
+                                <p className="text-[10px] text-slate-400 font-bold">Max file size: 10MB (JPG, PNG, GIF, WEBP, SVG, BMP)</p>
                             </div>
                         </div>
                     </div>
