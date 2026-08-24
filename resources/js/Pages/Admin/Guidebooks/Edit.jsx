@@ -255,15 +255,16 @@ export default function Edit({ auth, apartment, guidebook }) {
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-4">
                                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Banner Image</label>
-                                <div className="relative group rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-200 aspect-video flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 transition-all">
+                                <div className="relative group rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-200 aspect-video min-h-[200px] flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 transition-all">
                                     {bannerPreview ? (
                                         <>
                                             <img src={bannerPreview} className="absolute inset-0 w-full h-full object-cover" />
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all">
-                                                <ImageIcon className="w-6 h-6 text-white" />
-                                                <span className="text-[10px] font-black text-white uppercase tracking-widest">Click to change</span>
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all backdrop-blur-[2px]">
+                                                <span className="px-4 py-2 bg-white text-slate-900 rounded-lg shadow-lg font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+                                                    <ImageIcon className="w-4 h-4" /> Change Image
+                                                </span>
                                             </div>
                                         </>
                                     ) : savedBannerImage && !bannerBroken ? (
@@ -273,20 +274,22 @@ export default function Edit({ auth, apartment, guidebook }) {
                                                 onError={() => setBannerBroken(true)}
                                                 className="absolute inset-0 w-full h-full object-cover"
                                             />
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all">
-                                                <ImageIcon className="w-6 h-6 text-white" />
-                                                <span className="text-[10px] font-black text-white uppercase tracking-widest">Click to change</span>
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all backdrop-blur-[2px]">
+                                                <span className="px-4 py-2 bg-white text-slate-900 rounded-lg shadow-lg font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+                                                    <ImageIcon className="w-4 h-4" /> Change Image
+                                                </span>
                                             </div>
                                         </>
                                     ) : (
                                         <>
-                                            <ImageIcon className="w-10 h-10 text-slate-300 mb-2" />
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                                {bannerBroken ? 'Image missing — click to re-upload' : 'Click to upload'}
+                                            <ImageIcon className="w-10 h-10 text-slate-300 mb-4" />
+                                            <span className="px-4 py-2 bg-white text-indigo-600 rounded-lg shadow-sm border border-slate-100 font-bold text-xs uppercase tracking-widest">
+                                                {bannerBroken ? 'Re-upload Image' : 'Upload Image'}
                                             </span>
                                         </>
                                     )}
                                     <input
+                                        id="banner-upload-input"
                                         key={fileInputKey}
                                         type="file"
                                         onChange={e => {
@@ -305,31 +308,38 @@ export default function Edit({ auth, apartment, guidebook }) {
                                         className="absolute inset-0 opacity-0 cursor-pointer z-10"
                                         accept="image/*"
                                     />
-                                    {(data.banner_image || savedBannerImage) && (
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                // If there's a saved (server-side) image, mark it for removal on save
-                                                if (savedBannerImage && !data.banner_image) {
-                                                    setData(prev => ({ ...prev, banner_image: null, banner_image_removed: true }));
-                                                } else {
-                                                    setData(prev => ({ ...prev, banner_image: null, banner_image_removed: false }));
-                                                }
-                                                setSavedBannerImage(null);
-                                                setFileInputKey(k => k + 1);
-                                            }}
-                                            className="absolute top-2 right-2 p-1.5 bg-white/80 hover:bg-white text-rose-500 rounded-lg shadow-sm z-20 backdrop-blur-sm transition-all"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[10px] text-slate-400 font-bold">Max file size: 10MB (JPG, PNG, GIF, WEBP, SVG, BMP)</p>
+                                    {(data.banner_image || (savedBannerImage && !bannerBroken)) && (
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => document.getElementById('banner-upload-input').click()}
+                                                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+                                            >
+                                                Change
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    if (savedBannerImage && !data.banner_image) {
+                                                        setData(prev => ({ ...prev, banner_image: null, banner_image_removed: true }));
+                                                    } else {
+                                                        setData(prev => ({ ...prev, banner_image: null, banner_image_removed: false }));
+                                                    }
+                                                    setSavedBannerImage(null);
+                                                    setFileInputKey(k => k + 1);
+                                                }}
+                                                className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
-                                {errors.banner_image && (
-                                    <p className="text-rose-500 text-xs font-bold">{errors.banner_image}</p>
-                                )}
-                                <p className="text-[10px] text-slate-400 font-bold">Max file size: 10MB (JPG, PNG, GIF, WEBP, SVG, BMP)</p>
                             </div>
                         </div>
                     </div>
