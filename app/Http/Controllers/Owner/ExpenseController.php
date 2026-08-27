@@ -49,10 +49,15 @@ class ExpenseController extends Controller
     public function create()
     {
         $user = auth()->user();
-        $apartments = $user->apartments()->get(['id', 'name']);
+        $apartments = $user->apartments()->get(['id', 'name', 'apartment_group_id']);
+        
+        // Pass groups that have apartments owned by this user
+        $groupIds = $apartments->pluck('apartment_group_id')->filter()->unique();
+        $groups = \App\Models\ApartmentGroup::whereIn('id', $groupIds)->get(['id', 'name']);
 
         return Inertia::render('Owner/Expenses/Create', [
             'apartments' => $apartments,
+            'groups' => $groups,
         ]);
     }
 
@@ -62,24 +67,36 @@ class ExpenseController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-        $apartmentIds = $user->apartments()->pluck('id')->toArray();
+        $userApartmentIds = $user->apartments()->pluck('id')->toArray();
 
         $validated = $request->validate([
-            'apartment_id' => 'required|in:' . implode(',', $apartmentIds),
+            'apartment_ids' => 'required|array|min:1',
+            'apartment_ids.*' => 'required|in:' . implode(',', $userApartmentIds),
             'description' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
-            'proof_image' => 'nullable|image|max:2048',
+            'proof_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf|max:2048',
         ]);
 
+        $path = null;
         if ($request->hasFile('proof_image')) {
             $path = $request->file('proof_image')->store('expense_proofs', 'public');
-            $validated['proof_image'] = $path;
         }
 
-        Expense::create($validated);
+        $apartmentCount = count($validated['apartment_ids']);
+        $splitAmount = $validated['amount'] / $apartmentCount;
 
-        return redirect()->route('owner.expenses.index')->with('success', 'Expense logged successfully!');
+        foreach ($validated['apartment_ids'] as $apartmentId) {
+            Expense::create([
+                'apartment_id' => $apartmentId,
+                'description' => $validated['description'],
+                'amount' => $splitAmount,
+                'date' => $validated['date'],
+                'proof_image' => $path,
+            ]);
+        }
+
+        return redirect()->route('owner.expenses.index')->with('success', 'Expense(s) logged successfully!');
     }
 
     /**
@@ -124,7 +141,7 @@ class ExpenseController extends Controller
             'description' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
-            'proof_image' => 'nullable|image|max:2048',
+            'proof_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf|max:2048',
         ]);
 
         if ($request->hasFile('proof_image')) {

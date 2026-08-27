@@ -161,7 +161,7 @@ export default function Guidebook({ booking, apartment, guidebook, contactSettin
             {/* Mobile Header */}
             <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center">
-                    <img src="/logo_apartments24.png" alt="Apartments24" className="h-8 w-auto object-contain" />
+                    <img src="/logo_apartments24.png" alt="Apartments24" className="h-12 w-auto object-contain" />
                 </div>
                 <button 
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -228,7 +228,7 @@ export default function Guidebook({ booking, apartment, guidebook, contactSettin
                 <aside className="hidden lg:flex flex-col w-80 h-screen fixed top-0 left-0 bg-white border-r border-slate-100 p-8 overflow-y-auto z-30">
                     <div className="mb-12">
                         <div className="mb-4">
-                            <img src="/logo_apartments24.png" alt="Apartments24" className="h-12 w-auto object-contain" />
+                            <img src="/logo_apartments24.png" alt="Apartments24" className="h-20 w-auto object-contain" />
                         </div>
                     </div>
 

@@ -9,13 +9,14 @@ import {
     FileText,
     Building2,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
+    Info
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function Create({ auth, apartments }) {
+export default function Create({ auth, apartments, groups = [] }) {
     const { data, setData, post, processing, errors } = useForm({
-        apartment_id: '',
+        apartment_ids: [],
         description: '',
         amount: '',
         date: new Date().toISOString().split('T')[0],
@@ -26,6 +27,33 @@ export default function Create({ auth, apartments }) {
         e.preventDefault();
         post(route('owner.expenses.store'));
     };
+
+    const toggleApartment = (id) => {
+        if (data.apartment_ids.includes(id)) {
+            setData('apartment_ids', data.apartment_ids.filter(aId => aId !== id));
+        } else {
+            setData('apartment_ids', [...data.apartment_ids, id]);
+        }
+    };
+
+    const toggleGroup = (groupId) => {
+        const groupApartments = apartments.filter(a => a.apartment_group_id === groupId).map(a => a.id);
+        const allSelected = groupApartments.every(id => data.apartment_ids.includes(id));
+        
+        if (allSelected) {
+            setData('apartment_ids', data.apartment_ids.filter(id => !groupApartments.includes(id)));
+        } else {
+            const newIds = new Set([...data.apartment_ids, ...groupApartments]);
+            setData('apartment_ids', Array.from(newIds));
+        }
+    };
+
+    const groupedApartments = groups.map(group => ({
+        ...group,
+        apartments: apartments.filter(a => a.apartment_group_id === group.id)
+    }));
+    
+    const unassignedApartments = apartments.filter(a => !a.apartment_group_id);
 
     return (
         <AuthenticatedLayout
@@ -54,27 +82,75 @@ export default function Create({ auth, apartments }) {
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-8 md:p-12 space-y-10">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="grid grid-cols-1 gap-10">
                             {/* Apartment Selection */}
                             <div className="space-y-4">
                                 <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                                    <Building2 className="w-4 h-4" /> Select Apartment
+                                    <Building2 className="w-4 h-4" /> Select Apartments
                                 </label>
-                                <select
-                                    value={data.apartment_id}
-                                    onChange={e => setData('apartment_id', e.target.value)}
-                                    className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-orange-100 transition-all font-black text-slate-900"
-                                >
-                                    <option value="">Choose property...</option>
-                                    {apartments.map(apt => (
-                                        <option key={apt.id} value={apt.id}>{apt.name}</option>
+                                
+                                <div className="space-y-6">
+                                    {groupedApartments.map(group => group.apartments.length > 0 && (
+                                        <div key={group.id} className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                                            <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-200">
+                                                <h4 className="font-black text-slate-700 uppercase tracking-tight">{group.name}</h4>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => toggleGroup(group.id)}
+                                                    className="text-[10px] font-black uppercase text-indigo-600 hover:text-indigo-800 tracking-widest"
+                                                >
+                                                    Toggle All
+                                                </button>
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                {group.apartments.map(apt => (
+                                                    <label key={apt.id} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 cursor-pointer hover:border-indigo-200 transition-colors">
+                                                        <input 
+                                                            type="checkbox"
+                                                            checked={data.apartment_ids.includes(apt.id)}
+                                                            onChange={() => toggleApartment(apt.id)}
+                                                            className="rounded text-indigo-600 focus:ring-indigo-500 w-5 h-5 border-slate-300"
+                                                        />
+                                                        <span className="font-bold text-slate-700 text-sm">{apt.name}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
                                     ))}
-                                </select>
-                                {errors.apartment_id && <p className="text-rose-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1 mt-2">
-                                    <AlertCircle className="w-3 h-3" /> {errors.apartment_id}
-                                </p>}
-                            </div>
 
+                                    {unassignedApartments.length > 0 && (
+                                        <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                                            <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-200">
+                                                <h4 className="font-black text-slate-700 uppercase tracking-tight">Other Apartments</h4>
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                {unassignedApartments.map(apt => (
+                                                    <label key={apt.id} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 cursor-pointer hover:border-indigo-200 transition-colors">
+                                                        <input 
+                                                            type="checkbox"
+                                                            checked={data.apartment_ids.includes(apt.id)}
+                                                            onChange={() => toggleApartment(apt.id)}
+                                                            className="rounded text-indigo-600 focus:ring-indigo-500 w-5 h-5 border-slate-300"
+                                                        />
+                                                        <span className="font-bold text-slate-700 text-sm">{apt.name}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                {errors.apartment_ids && <p className="text-rose-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1 mt-2">
+                                    <AlertCircle className="w-3 h-3" /> {errors.apartment_ids}
+                                </p>}
+                                {data.apartment_ids.length > 1 && (
+                                    <p className="text-indigo-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1 mt-2">
+                                        <Info className="w-3 h-3" /> The total amount will be split evenly across selected apartments.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                             {/* Date Selection */}
                             <div className="space-y-4">
                                 <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
@@ -92,13 +168,13 @@ export default function Create({ auth, apartments }) {
                             </div>
 
                             {/* Description */}
-                            <div className="md:col-span-2 space-y-4">
+                            <div className="space-y-4">
                                 <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                                     <FileText className="w-4 h-4" /> Description
                                 </label>
                                 <input
                                     type="text"
-                                    placeholder="e.g. Professional Cleaning after stay"
+                                    placeholder="e.g. Professional Cleaning"
                                     value={data.description}
                                     onChange={e => setData('description', e.target.value)}
                                     className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-orange-100 transition-all font-black text-slate-900 placeholder:text-slate-300"
@@ -111,7 +187,7 @@ export default function Create({ auth, apartments }) {
                             {/* Amount */}
                             <div className="space-y-4">
                                 <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                                    <Euro className="w-4 h-4" /> Amount Paid
+                                    <Euro className="w-4 h-4" /> Total Amount Paid
                                 </label>
                                 <div className="relative">
                                     <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-black">€</span>
@@ -132,11 +208,12 @@ export default function Create({ auth, apartments }) {
                             {/* Proof Image Placeholder */}
                             <div className="space-y-4">
                                 <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                                    <Receipt className="w-4 h-4" /> Receipt/Proof (Optional)
+                                    <Receipt className="w-4 h-4" /> Receipt/Proof (PDF/Image)
                                 </label>
                                 <div className="relative">
                                     <input
                                         type="file"
+                                        accept=".pdf,.png,.jpg,.jpeg,.gif"
                                         onChange={e => setData('proof_image', e.target.files[0])}
                                         className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-orange-100 transition-all font-black text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-brand-orange file:text-white hover:file:bg-orange-700 cursor-pointer"
                                     />

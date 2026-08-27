@@ -15,6 +15,7 @@ class Apartment extends Model
         'name',
         'address',
         'city',
+        'apartment_group_id',
         'instructions',
         'instructions_et',
         'instructions_ru',
@@ -69,5 +70,13 @@ class Apartment extends Model
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
+    }
+
+    /**
+     * Get the group the apartment belongs to.
+     */
+    public function apartmentGroup(): BelongsTo
+    {
+        return $this->belongsTo(ApartmentGroup::class);
     }
 }

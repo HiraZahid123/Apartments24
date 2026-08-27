@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
 Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('apartments', App\Http\Controllers\Admin\ApartmentController::class);
+    Route::resource('apartment-groups', App\Http\Controllers\Admin\ApartmentGroupController::class);
     Route::delete('/bookings/bulk-destroy', [App\Http\Controllers\Admin\BookingController::class, 'bulkDestroy'])->name('bookings.bulk-destroy');
     Route::post('/bookings/bulk-update-status', [App\Http\Controllers\Admin\BookingController::class, 'bulkUpdateStatus'])->name('bookings.bulk-update-status');
     Route::resource('bookings', App\Http\Controllers\Admin\BookingController::class);

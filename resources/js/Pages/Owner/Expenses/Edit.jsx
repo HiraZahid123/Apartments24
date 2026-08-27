@@ -146,6 +146,7 @@ export default function Edit({ auth, apartments, expense }) {
                                 <div className="relative">
                                     <input
                                         type="file"
+                                        accept=".pdf,.png,.jpg,.jpeg,.gif"
                                         onChange={e => setData('proof_image', e.target.files[0])}
                                         className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-orange-100 transition-all font-black text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-brand-orange file:text-white hover:file:bg-orange-700 cursor-pointer"
                                     />

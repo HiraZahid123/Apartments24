@@ -50,10 +50,11 @@ class ApartmentController extends Controller
      */
     public function create()
     {
-        $owners = User::where('user_type', 'owner')->orderBy('name')->get(['id', 'name']);
-        
+        $owners = User::where('user_type', 'owner')->get(['id', 'name', 'email']);
+        $groups = \App\Models\ApartmentGroup::all(['id', 'name']);
         return Inertia::render('Admin/Apartments/Create', [
             'owners' => $owners,
+            'groups' => $groups
         ]);
     }
 
@@ -64,6 +65,7 @@ class ApartmentController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'apartment_group_id' => 'nullable|exists:apartment_groups,id',
             'address' => 'required|string',
             'city' => 'required|string|max:255',
             'instructions' => 'nullable|string',
@@ -98,11 +100,12 @@ class ApartmentController extends Controller
      */
     public function edit(Apartment $apartment)
     {
-        $owners = User::where('user_type', 'owner')->orderBy('name')->get(['id', 'name']);
-        
+        $owners = User::where('user_type', 'owner')->get(['id', 'name', 'email']);
+        $groups = \App\Models\ApartmentGroup::all(['id', 'name']);
         return Inertia::render('Admin/Apartments/Edit', [
             'apartment' => $apartment,
             'owners' => $owners,
+            'groups' => $groups
         ]);
     }
 
@@ -113,6 +116,7 @@ class ApartmentController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'apartment_group_id' => 'nullable|exists:apartment_groups,id',
             'address' => 'required|string',
             'city' => 'required|string|max:255',
             'instructions' => 'nullable|string',
