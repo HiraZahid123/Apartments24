@@ -11,7 +11,9 @@ import {
     FileText,
     Search,
     Filter,
-    ArrowRight
+    ArrowRight,
+    Pen,
+    ExternalLink
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
@@ -117,6 +119,24 @@ export default function Index({ auth, expenses, filters }) {
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <div className="flex items-center justify-end gap-2">
+                                                {expense.proof_image_url && (
+                                                    <a
+                                                        href={expense.proof_image_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="p-3 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                                                        title="View Receipt"
+                                                    >
+                                                        <ExternalLink className="w-5 h-5" />
+                                                    </a>
+                                                )}
+                                                <Link
+                                                    href={route('owner.expenses.edit', expense.id)}
+                                                    className="p-3 text-slate-300 hover:text-brand-orange hover:bg-orange-50 rounded-xl transition-all"
+                                                    title="Edit Entry"
+                                                >
+                                                    <Pen className="w-5 h-5" />
+                                                </Link>
                                                 <button
                                                     onClick={() => handleDelete(expense.id)}
                                                     className="p-3 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"

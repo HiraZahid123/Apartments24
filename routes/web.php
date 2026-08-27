@@ -130,7 +130,7 @@ Route::post('/admin/impersonate/leave', [App\Http\Controllers\Admin\Impersonatio
 // ------------------- OWNER ROUTES (Phase 6) -------------------
 Route::prefix('owner')->middleware(['auth', 'owner'])->name('owner.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Owner\DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('expenses', App\Http\Controllers\Owner\ExpenseController::class)->only(['index', 'create', 'store', 'destroy']);
+    Route::resource('expenses', App\Http\Controllers\Owner\ExpenseController::class);
 });
 
 // ------------------- GUEST ROUTES (Phase 4) -------------------

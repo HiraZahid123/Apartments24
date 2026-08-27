@@ -9,30 +9,32 @@ import {
     FileText,
     Building2,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
+    ExternalLink
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function Create({ auth, apartments }) {
+export default function Edit({ auth, apartments, expense }) {
     const { data, setData, post, processing, errors } = useForm({
-        apartment_id: '',
-        description: '',
-        amount: '',
-        date: new Date().toISOString().split('T')[0],
+        _method: 'put',
+        apartment_id: expense.apartment_id || '',
+        description: expense.description || '',
+        amount: expense.amount || '',
+        date: expense.date || new Date().toISOString().split('T')[0],
         proof_image: null,
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('owner.expenses.store'));
+        post(route('owner.expenses.update', expense.id));
     };
 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-extrabold text-3xl text-slate-900 tracking-tight leading-none italic uppercase">New Expense</h2>}
+            header={<h2 className="font-extrabold text-3xl text-slate-900 tracking-tight leading-none italic uppercase">Edit Expense</h2>}
         >
-            <Head title="Log Expense | Apartments24" />
+            <Head title="Edit Expense | Apartments24" />
 
             <div className="py-6 max-w-3xl">
                 <Link
@@ -49,7 +51,7 @@ export default function Create({ auth, apartments }) {
                         </div>
                         <div>
                             <h3 className="text-2xl font-black text-slate-900 leading-tight">Operational Cost</h3>
-                            <p className="text-slate-400 font-bold">Log maintenance, cleaning, or utility expenses.</p>
+                            <p className="text-slate-400 font-bold">Update maintenance, cleaning, or utility expenses.</p>
                         </div>
                     </div>
 
@@ -129,10 +131,17 @@ export default function Create({ auth, apartments }) {
                                 </p>}
                             </div>
 
-                            {/* Proof Image Placeholder */}
+                            {/* Proof Image Upload */}
                             <div className="space-y-4">
-                                <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                                    <Receipt className="w-4 h-4" /> Receipt/Proof (Optional)
+                                <label className="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                    <div className="flex items-center gap-2">
+                                        <Receipt className="w-4 h-4" /> Receipt/Proof (Optional)
+                                    </div>
+                                    {expense.proof_image_url && (
+                                        <a href={expense.proof_image_url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                                            <ExternalLink className="w-3 h-3" /> View Current
+                                        </a>
+                                    )}
                                 </label>
                                 <div className="relative">
                                     <input
@@ -141,6 +150,7 @@ export default function Create({ auth, apartments }) {
                                         className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-orange-100 transition-all font-black text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-brand-orange file:text-white hover:file:bg-orange-700 cursor-pointer"
                                     />
                                 </div>
+                                <p className="text-[10px] text-slate-400 font-bold ml-1">Uploading a new file will replace the current one.</p>
                                 {errors.proof_image && <p className="text-rose-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1 mt-2">
                                     <AlertCircle className="w-3 h-3" /> {errors.proof_image}
                                 </p>}
@@ -154,7 +164,7 @@ export default function Create({ auth, apartments }) {
                                 className="w-full md:w-auto px-12 py-5 bg-brand-orange text-white rounded-[2.5rem] font-black text-sm uppercase tracking-widest hover:bg-orange-700 shadow-xl shadow-orange-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                             >
                                 <Save className="w-5 h-5" />
-                                Save Expense Entry
+                                Update Expense Entry
                             </motion.button>
                         </div>
                     </form>

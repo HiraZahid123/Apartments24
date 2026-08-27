@@ -21,7 +21,10 @@ class ApartmentController extends Controller
         $apartments = Apartment::with('owner')
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('city', 'like', "%{$search}%");
+                    ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhereHas('owner', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
             })
             ->orderBy('name')
             ->get()

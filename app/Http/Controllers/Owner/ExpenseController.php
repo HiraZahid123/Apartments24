@@ -33,6 +33,7 @@ class ExpenseController extends Controller
                     'description' => $expense->description,
                     'amount' => $expense->amount,
                     'date' => $expense->date ? $expense->date->format('Y-m-d') : null,
+                    'proof_image_url' => $expense->proof_image ? asset('storage/' . $expense->proof_image) : null,
                 ];
             });
 
@@ -79,6 +80,61 @@ class ExpenseController extends Controller
         Expense::create($validated);
 
         return redirect()->route('owner.expenses.index')->with('success', 'Expense logged successfully!');
+    }
+
+    /**
+     * Show the form for editing the specified expense.
+     */
+    public function edit(Expense $expense)
+    {
+        $user = auth()->user();
+        $apartments = $user->apartments()->get(['id', 'name']);
+
+        // Security check
+        if (!in_array($expense->apartment_id, $apartments->pluck('id')->toArray())) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Include the proof_image URL if it exists
+        $expenseData = $expense->toArray();
+        $expenseData['proof_image_url'] = $expense->proof_image ? asset('storage/' . $expense->proof_image) : null;
+        $expenseData['date'] = $expense->date ? $expense->date->format('Y-m-d') : null;
+
+        return Inertia::render('Owner/Expenses/Edit', [
+            'apartments' => $apartments,
+            'expense' => $expenseData,
+        ]);
+    }
+
+    /**
+     * Update the specified expense in storage.
+     */
+    public function update(Request $request, Expense $expense)
+    {
+        $user = auth()->user();
+        $apartmentIds = $user->apartments()->pluck('id')->toArray();
+
+        // Security check
+        if (!in_array($expense->apartment_id, $apartmentIds)) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'apartment_id' => 'required|in:' . implode(',', $apartmentIds),
+            'description' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'date' => 'required|date',
+            'proof_image' => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->hasFile('proof_image')) {
+            $path = $request->file('proof_image')->store('expense_proofs', 'public');
+            $validated['proof_image'] = $path;
+        }
+
+        $expense->update($validated);
+
+        return redirect()->route('owner.expenses.index')->with('success', 'Expense updated successfully!');
     }
 
     /**
