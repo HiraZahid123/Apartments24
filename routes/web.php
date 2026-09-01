@@ -131,6 +131,8 @@ Route::post('/admin/impersonate/leave', [App\Http\Controllers\Admin\Impersonatio
 // ------------------- OWNER ROUTES (Phase 6) -------------------
 Route::prefix('owner')->middleware(['auth', 'owner'])->name('owner.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Owner\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/financial-records', [App\Http\Controllers\Owner\FinancialRecordController::class, 'index'])->name('financial-records.index');
+    Route::get('/financial-records/export', [App\Http\Controllers\Owner\FinancialRecordController::class, 'export'])->name('financial-records.export');
     Route::resource('expenses', App\Http\Controllers\Owner\ExpenseController::class);
 });
 

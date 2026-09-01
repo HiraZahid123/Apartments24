@@ -20,12 +20,12 @@ class ReportController extends Controller
         $month = $request->input('month', now()->month);
 
         // --- Monthly Financials (Selected Period) ---
-        // 1. Total Revenue (Total Price of bookings check-in this month)
-        // Note: We use check_in_date for revenue recognition in this simple model
+        // 1. Total Revenue, Admin Commission, and Owner Share
+        // Revenue is recognized in the month of check_out_date (aligning with Booking.com payout schedule)
         $monthlyBookings = Booking::with('apartment')
             ->where('status', '!=', 'cancelled')
-            ->whereMonth('check_in_date', $month)
-            ->whereYear('check_in_date', $year)
+            ->whereMonth('check_out_date', $month)
+            ->whereYear('check_out_date', $year)
             ->get();
 
         $monthlyTotalRevenue = $monthlyBookings->sum('total_price');
@@ -44,8 +44,8 @@ class ReportController extends Controller
             $monthStart = Carbon::createFromDate($year, $i, 1);
             
             $monthBookings = Booking::where('status', '!=', 'cancelled')
-                ->whereMonth('check_in_date', $i)
-                ->whereYear('check_in_date', $year)
+                ->whereMonth('check_out_date', $i)
+                ->whereYear('check_out_date', $year)
                 ->get();
 
             $total = $monthBookings->sum('total_price');
@@ -63,11 +63,11 @@ class ReportController extends Controller
         // --- Top Performing Apartments (Yearly) ---
         $topApartments = Apartment::withCount(['bookings' => function($query) use ($year) {
                 $query->where('status', '!=', 'cancelled')
-                      ->whereYear('check_in_date', $year);
+                      ->whereYear('check_out_date', $year);
             }])
             ->withSum(['bookings' => function($query) use ($year) {
                 $query->where('status', '!=', 'cancelled')
-                      ->whereYear('check_in_date', $year);
+                      ->whereYear('check_out_date', $year);
             }], 'total_price')
             ->orderByDesc('bookings_sum_total_price')
             ->take(5)
@@ -105,8 +105,8 @@ class ReportController extends Controller
 
         $bookings = Booking::with('apartment')
             ->where('status', '!=', 'cancelled')
-            ->whereMonth('check_in_date', $month)
-            ->whereYear('check_in_date', $year)
+            ->whereMonth('check_out_date', $month)
+            ->whereYear('check_out_date', $year)
             ->get();
 
         $totalRevenue = $bookings->sum('total_price');

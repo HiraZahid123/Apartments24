@@ -14,7 +14,8 @@ import {
     TrendingDown,
     LayoutDashboard,
     Receipt,
-    ArrowRight
+    ArrowRight,
+    FileText
 } from 'lucide-react';
 import {
     Chart as ChartJS,
@@ -91,7 +92,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
         }
     };
 
-    const StatCard = ({ title, value, icon: Icon, trend, trendValue, color }) => (
+    const StatCard = ({ title, value, icon: Icon, trend, trendValue, color, subtext }) => (
         <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all">
             <div className="flex justify-between items-start mb-6">
                 <div className={`p-4 rounded-2xl ${color}`}>
@@ -104,24 +105,52 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                     </span>
                 )}
             </div>
-            <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">{title}</p>
+            <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{title}</p>
             <h3 className="text-3xl font-black text-slate-900 tracking-tight">€{value}</h3>
+            {subtext && <p className="text-[11px] font-bold text-slate-400 mt-2">{subtext}</p>}
         </div>
     );
 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-extrabold text-3xl text-slate-900 tracking-tight leading-none italic uppercase">Owner Insights</h2>}
+            header={
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div className="flex items-center gap-3">
+                            <h2 className="font-extrabold text-3xl text-slate-900 tracking-tight leading-none italic uppercase">
+                                Owner Insights
+                            </h2>
+                            {stats.ongoing_month && (
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-orange-50 text-brand-orange border border-orange-200/50">
+                                    Ongoing Month: {stats.ongoing_month}
+                                </span>
+                            )}
+                        </div>
+                        <p className="text-sm font-bold text-slate-400 mt-2">
+                            Overview of live metrics for the ongoing month
+                        </p>
+                    </div>
+
+                    <Link
+                        href={route('owner.financial-records.index')}
+                        className="inline-flex items-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-slate-800 transition-all shadow-md active:scale-95 self-start sm:self-auto"
+                    >
+                        <FileText className="w-4 h-4 text-brand-orange" />
+                        Financial Records
+                    </Link>
+                </div>
+            }
         >
             <Head title="Owner Dashboard | Apartments24" />
 
             <div className="py-6 space-y-8">
-                {/* Stats Grid */}
+                {/* Stats Grid - Ongoing Month */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <StatCard
                         title={`Net Revenue (${auth.user.owner_revenue_percentage || 65}%)`}
                         value={stats.total_revenue}
+                        subtext={`${stats.ongoing_month || 'Ongoing Month'}`}
                         icon={DollarSign}
                         trend={stats.revenue_trend > 0 ? 'up' : stats.revenue_trend < 0 ? 'down' : null}
                         trendValue={`${Math.abs(stats.revenue_trend)}%`}
@@ -130,6 +159,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                     <StatCard
                         title="Operational Expenses"
                         value={stats.total_expenses}
+                        subtext={`${stats.ongoing_month || 'Ongoing Month'}`}
                         icon={Receipt}
                         trend={stats.expense_trend > 0 ? 'up' : stats.expense_trend < 0 ? 'down' : null}
                         trendValue={`${Math.abs(stats.expense_trend)}%`}
@@ -138,9 +168,33 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                     <StatCard
                         title="Net Earnings"
                         value={stats.net_earnings}
+                        subtext={`${stats.ongoing_month || 'Ongoing Month'}`}
                         icon={TrendingUp}
                         color="bg-emerald-50 text-emerald-600"
                     />
+                </div>
+
+                {/* Banner to Navigate Previous Months Financial Records */}
+                <div className="bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent border border-orange-200/60 p-6 rounded-[2.5rem] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3.5 bg-brand-orange text-white rounded-2xl shadow-lg shadow-orange-500/20">
+                            <Calendar className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h4 className="text-base font-black text-slate-900">
+                                Need Previous Months Financial Records?
+                            </h4>
+                            <p className="text-xs font-bold text-slate-500 mt-0.5">
+                                Select previous months, filter by apartment or apartment group, view reservation breakdowns, and export PDF statements.
+                            </p>
+                        </div>
+                    </div>
+                    <Link
+                        href={route('owner.financial-records.index')}
+                        className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 rounded-xl font-black text-xs uppercase tracking-wider hover:bg-slate-50 transition-all border border-slate-200 shadow-sm self-start md:self-auto"
+                    >
+                        View Previous Records <ArrowRight className="w-4 h-4 text-brand-orange" />
+                    </Link>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

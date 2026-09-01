@@ -71,6 +71,10 @@ class Booking extends Model
      */
     public function getLinkedApartments()
     {
+        if (!$this->created_at || !$this->guest_email) {
+            return collect($this->apartment ? [$this->apartment] : []);
+        }
+
         return Booking::where('guest_email', $this->guest_email)
             ->where('check_in_date', $this->check_in_date)
             ->where('check_out_date', $this->check_out_date)

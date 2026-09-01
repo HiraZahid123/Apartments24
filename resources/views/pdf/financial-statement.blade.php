@@ -141,6 +141,7 @@
                     <th>Apartment</th>
                     <th>Guest</th>
                     <th>Check-in</th>
+                    <th>Check-out</th>
                     <th class="text-right">Total</th>
                     <th class="text-right">Owner Share</th>
                     <th class="text-right">Admin Share</th>
@@ -151,7 +152,8 @@
                 <tr>
                     <td>{{ $booking->apartment->name }}</td>
                     <td>{{ $booking->guest_name }}</td>
-                    <td>{{ $booking->check_in_date->format('d M Y') }}</td>
+                    <td>{{ $booking->check_in_date ? $booking->check_in_date->format('d M Y') : 'N/A' }}</td>
+                    <td><strong>{{ $booking->check_out_date ? $booking->check_out_date->format('d M Y') : 'N/A' }}</strong></td>
                     <td class="text-right">{{ number_format($booking->total_price, 2) }}</td>
                     <td class="text-right">{{ number_format($booking->net_revenue, 2) }}</td>
                     <td class="text-right">{{ number_format($booking->total_price - $booking->net_revenue, 2) }}</td>

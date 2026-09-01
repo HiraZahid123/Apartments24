@@ -17,11 +17,6 @@ class DashboardController extends Controller
         $user = auth()->user();
         $apartmentIds = $user->apartments()->pluck('id');
 
-        // Financial Metrics (Total)
-        $totalRevenue = Booking::whereIn('apartment_id', $apartmentIds)
-            ->where('status', '!=', 'cancelled')
-            ->sum('net_revenue');
-
         // Helper to query owner's expenses (direct, group, or multi-unit)
         $ownerExpensesQuery = function () use ($user, $apartmentIds) {
             return Expense::where(function ($q) use ($user, $apartmentIds) {
@@ -33,16 +28,12 @@ class DashboardController extends Controller
             });
         };
 
-        $totalExpenses = $ownerExpensesQuery()->sum('amount');
-
-        $netEarnings = $totalRevenue - $totalExpenses;
-
-        // --- DYNAMIC TRENDS (Month-over-Month) ---
-        // Current Month Data
+        // --- ONGOING MONTH FINANCIAL METRICS ---
+        // Revenue attributed to check-out date (aligning with Booking.com payout schedule)
         $currentMonthRevenue = Booking::whereIn('apartment_id', $apartmentIds)
             ->where('status', '!=', 'cancelled')
-            ->whereMonth('check_in_date', now()->month)
-            ->whereYear('check_in_date', now()->year)
+            ->whereMonth('check_out_date', now()->month)
+            ->whereYear('check_out_date', now()->year)
             ->sum('net_revenue');
 
         $currentMonthExpenses = $ownerExpensesQuery()
@@ -50,11 +41,14 @@ class DashboardController extends Controller
             ->whereYear('date', now()->year)
             ->sum('amount');
 
-        // Previous Month Data
+        $netEarnings = $currentMonthRevenue - $currentMonthExpenses;
+
+        // --- DYNAMIC TRENDS (Month-over-Month) ---
+        // Previous Month Data (Revenue attributed to checkout date)
         $previousMonthRevenue = Booking::whereIn('apartment_id', $apartmentIds)
             ->where('status', '!=', 'cancelled')
-            ->whereMonth('check_in_date', now()->subMonth()->month)
-            ->whereYear('check_in_date', now()->subMonth()->year)
+            ->whereMonth('check_out_date', now()->subMonth()->month)
+            ->whereYear('check_out_date', now()->subMonth()->year)
             ->sum('net_revenue');
 
         $previousMonthExpenses = $ownerExpensesQuery()
@@ -114,8 +108,8 @@ class DashboardController extends Controller
             $monthName = $date->format('M');
             $revenue = Booking::whereIn('apartment_id', $apartmentIds)
                 ->where('status', '!=', 'cancelled')
-                ->whereMonth('check_in_date', $date->month)
-                ->whereYear('check_in_date', $date->year)
+                ->whereMonth('check_out_date', $date->month)
+                ->whereYear('check_out_date', $date->year)
                 ->sum('net_revenue');
             
             $monthlyRevenueData[] = [
@@ -126,14 +120,16 @@ class DashboardController extends Controller
 
         return Inertia::render('Owner/Dashboard', [
             'stats' => [
-                'total_revenue' => number_format($totalRevenue, 2),
-                'total_expenses' => number_format($totalExpenses, 2),
+                'total_revenue' => number_format($currentMonthRevenue, 2),
+                'total_expenses' => number_format($currentMonthExpenses, 2),
                 'net_earnings' => number_format($netEarnings, 2),
                 'total_bookings' => $totalBookings,
                 'active_stays' => $activeStays,
                 'upcoming_stays' => $upcomingStays,
                 'revenue_trend' => round($revenueTrend, 0),
                 'expense_trend' => round($expenseTrend, 0),
+                'ongoing_month' => now()->format('F Y'),
+                'ongoing_month_name' => now()->format('F'),
             ],
             'recentBookings' => $recentBookings,
             'monthlyRevenue' => $monthlyRevenueData

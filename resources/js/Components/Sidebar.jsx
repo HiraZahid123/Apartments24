@@ -12,7 +12,8 @@ import {
     ChevronRight,
     PieChart,
     Shield,
-    UserCircle
+    UserCircle,
+    FileText
 } from 'lucide-react';
 
 const SidebarItem = ({ href, icon: Icon, label, active, disabled }) => (
@@ -132,6 +133,12 @@ export default function Sidebar() {
                             icon={PieChart}
                             label="Revenue"
                             active={route().current('owner.dashboard')}
+                        />
+                        <SidebarItem
+                            href={route('owner.financial-records.index')}
+                            icon={FileText}
+                            label="Financial Records"
+                            active={route().current('owner.financial-records.*')}
                         />
                         <SidebarItem
                             href={route('owner.expenses.index')}
