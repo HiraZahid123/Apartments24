@@ -65,11 +65,19 @@ class Apartment extends Model
     }
 
     /**
-     * Get the expenses for the apartment.
+     * Get the direct expenses for the apartment.
      */
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
+    }
+
+    /**
+     * Get all expenses (including group and multi-unit expenses) associated with this apartment.
+     */
+    public function allExpenses(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Expense::class, 'apartment_expense')->withTimestamps();
     }
 
     /**

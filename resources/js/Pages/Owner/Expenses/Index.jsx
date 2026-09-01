@@ -13,7 +13,8 @@ import {
     Filter,
     ArrowRight,
     Pen,
-    ExternalLink
+    ExternalLink,
+    Layers
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
@@ -92,13 +93,28 @@ export default function Index({ auth, expenses, filters }) {
                                     <tr key={expense.id} className="group hover:bg-slate-50/50 transition-colors">
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-3">
-                                                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
-                                                    <Building2 className="w-5 h-5" />
+                                                <div className={`p-3 rounded-xl ${expense.is_group ? 'bg-indigo-100 text-indigo-700' : 'bg-indigo-50 text-indigo-600'}`}>
+                                                    {expense.is_group ? <Layers className="w-5 h-5" /> : <Building2 className="w-5 h-5" />}
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-slate-900 leading-tight mb-1">{expense.apartment_name}</p>
-                                                    <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                                        Operational Cost
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="font-black text-slate-900 leading-tight mb-1">{expense.apartment_name}</p>
+                                                        {expense.is_group && (
+                                                            <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-wider">
+                                                                Group Expense • {expense.units_count} Units
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                                        <span>Operational Cost</span>
+                                                        {expense.is_group && expense.units_list && expense.units_list.length > 0 && (
+                                                            <>
+                                                                <span>•</span>
+                                                                <span className="text-slate-500 normal-case font-medium truncate max-w-xs" title={expense.units_list.join(', ')}>
+                                                                    {expense.units_list.join(', ')}
+                                                                </span>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>

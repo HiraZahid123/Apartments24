@@ -15,4 +15,9 @@ class ApartmentGroup extends Model
     {
         return $this->hasMany(Apartment::class);
     }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
 }

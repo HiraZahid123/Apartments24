@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->hasMany(Apartment::class, 'owner_id');
     }
 
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class);
+    }
+
     public function verified_checkins(): HasMany
     {
         return $this->hasMany(GuestCheckin::class, 'verified_by');

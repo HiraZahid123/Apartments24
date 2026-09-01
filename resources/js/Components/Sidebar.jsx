@@ -3,6 +3,7 @@ import { Link, usePage, router } from '@inertiajs/react';
 import {
     LayoutDashboard,
     Building2,
+    Layers,
     Calendar,
     Users,
     Settings,
@@ -75,6 +76,12 @@ export default function Sidebar() {
                             icon={Building2}
                             label="Apartments"
                             active={route().current('admin.apartments.*')}
+                        />
+                        <SidebarItem
+                            href={route('admin.apartment-groups.index')}
+                            icon={Layers}
+                            label="Apartment Groups"
+                            active={route().current('admin.apartment-groups.*')}
                         />
                         <SidebarItem
                             href={route('admin.reports.index')}

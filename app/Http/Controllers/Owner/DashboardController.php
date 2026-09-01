@@ -22,8 +22,18 @@ class DashboardController extends Controller
             ->where('status', '!=', 'cancelled')
             ->sum('net_revenue');
 
-        $totalExpenses = Expense::whereIn('apartment_id', $apartmentIds)
-            ->sum('amount');
+        // Helper to query owner's expenses (direct, group, or multi-unit)
+        $ownerExpensesQuery = function () use ($user, $apartmentIds) {
+            return Expense::where(function ($q) use ($user, $apartmentIds) {
+                $q->where('user_id', $user->id)
+                    ->orWhereIn('apartment_id', $apartmentIds)
+                    ->orWhereHas('apartments', function ($sq) use ($apartmentIds) {
+                        $sq->whereIn('apartments.id', $apartmentIds);
+                    });
+            });
+        };
+
+        $totalExpenses = $ownerExpensesQuery()->sum('amount');
 
         $netEarnings = $totalRevenue - $totalExpenses;
 
@@ -35,7 +45,7 @@ class DashboardController extends Controller
             ->whereYear('check_in_date', now()->year)
             ->sum('net_revenue');
 
-        $currentMonthExpenses = Expense::whereIn('apartment_id', $apartmentIds)
+        $currentMonthExpenses = $ownerExpensesQuery()
             ->whereMonth('date', now()->month)
             ->whereYear('date', now()->year)
             ->sum('amount');
@@ -47,7 +57,7 @@ class DashboardController extends Controller
             ->whereYear('check_in_date', now()->subMonth()->year)
             ->sum('net_revenue');
 
-        $previousMonthExpenses = Expense::whereIn('apartment_id', $apartmentIds)
+        $previousMonthExpenses = $ownerExpensesQuery()
             ->whereMonth('date', now()->subMonth()->month)
             ->whereYear('date', now()->subMonth()->year)
             ->sum('amount');

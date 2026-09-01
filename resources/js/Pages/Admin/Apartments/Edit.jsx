@@ -175,11 +175,19 @@ export default function Edit({ auth, apartment, owners, groups }) {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    <Building2 className="w-3 h-3" /> Assign to Group (Optional)
-                                </label>
+                                <div className="flex items-center justify-between">
+                                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                        <Building2 className="w-3 h-3" /> Assign to Group (Optional)
+                                    </label>
+                                    <Link
+                                        href={route('admin.apartment-groups.create')}
+                                        className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-colors"
+                                    >
+                                        + New Group
+                                    </Link>
+                                </div>
                                 <select
-                                    value={data.apartment_group_id}
+                                    value={data.apartment_group_id || ''}
                                     onChange={e => setData('apartment_group_id', e.target.value)}
                                     className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all font-bold text-slate-900"
                                 >
@@ -188,6 +196,11 @@ export default function Edit({ auth, apartment, owners, groups }) {
                                         <option key={group.id} value={group.id}>{group.name}</option>
                                     ))}
                                 </select>
+                                {groups.length === 0 && (
+                                    <p className="text-xs text-amber-600 font-medium">
+                                        No groups created yet. <Link href={route('admin.apartment-groups.create')} className="underline font-bold">Create an Apartment Group</Link> first.
+                                    </p>
+                                )}
                                 {errors.apartment_group_id && <p className="text-rose-500 text-xs font-bold">{errors.apartment_group_id}</p>}
                             </div>
 

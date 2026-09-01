@@ -174,7 +174,7 @@
             <tbody>
                 @foreach($expenses_list as $expense)
                 <tr>
-                    <td>{{ $expense->apartment->name }}</td>
+                    <td>{{ $expense->apartment?->name ?? $expense->apartmentGroup?->name ?? ($expense->apartments->isNotEmpty() ? $expense->apartments->pluck('name')->join(', ') : 'General Expense') }}</td>
                     <td>{{ $expense->description }}</td>
                     <td>{{ $expense->date->format('d M Y') }}</td>
                     <td class="text-right">{{ number_format($expense->amount, 2) }}</td>

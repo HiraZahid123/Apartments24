@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useState } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import { Building2, Plus, Edit2, Trash2, CheckCircle, XCircle, Search, MapPin, User, Key, ArrowRight } from 'lucide-react';
+import { Building2, Plus, Edit2, Trash2, CheckCircle, XCircle, Search, MapPin, User, Key, ArrowRight, Layers } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 export default function Index({ auth, apartments, filters }) {
@@ -45,13 +45,22 @@ export default function Index({ auth, apartments, filters }) {
                             className="w-full pl-12 pr-4 py-4 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-100 focus:border-indigo-600 transition-all font-medium text-slate-600"
                         />
                     </div>
-                    <Link
-                        href={route('admin.apartments.create')}
-                        className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all hover:-translate-y-0.5"
-                    >
-                        <Plus className="w-5 h-5" />
-                        Add New Property
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href={route('admin.apartment-groups.index')}
+                            className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-white text-indigo-600 border border-indigo-200 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-indigo-50 shadow-sm transition-all hover:-translate-y-0.5"
+                        >
+                            <Layers className="w-5 h-5" />
+                            Manage Groups
+                        </Link>
+                        <Link
+                            href={route('admin.apartments.create')}
+                            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all hover:-translate-y-0.5"
+                        >
+                            <Plus className="w-5 h-5" />
+                            Add New Property
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

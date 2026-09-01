@@ -113,7 +113,7 @@ class ReportController extends Controller
         $ownerShare = $bookings->sum('net_revenue');
         $adminCommission = $totalRevenue - $ownerShare;
 
-        $expenses = Expense::with('apartment')
+        $expenses = Expense::with(['apartment', 'apartmentGroup', 'apartments'])
             ->whereMonth('date', $month)
             ->whereYear('date', $year)
             ->get();
