@@ -10,7 +10,8 @@ import {
     Calendar,
     ArrowUpRight,
     Building2,
-    DollarSign
+    DollarSign,
+    CreditCard
 } from 'lucide-react';
 import {
     Chart as ChartJS,
@@ -65,7 +66,7 @@ export default function Index({ financials, chartData, topApartments, filters })
                 yAxisID: 'y',
             },
             {
-                label: 'Admin Commission',
+                label: 'Admin Management Fee',
                 data: chartData.map(d => d.admin_commission),
                 borderColor: '#10b981', // Emerald
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -164,7 +165,7 @@ export default function Index({ financials, chartData, topApartments, filters })
             <div className="py-6 max-w-7xl mx-auto space-y-6">
 
                 {/* Monthly Overview Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                     <StatCard
                         title={`Total Revenue (${financials.month})`}
                         value={currency(financials.total_revenue)}
@@ -174,12 +175,20 @@ export default function Index({ financials, chartData, topApartments, filters })
                         bg="bg-indigo-50"
                     />
                     <StatCard
-                        title="Admin Commission"
+                        title="Admin Management Fee"
                         value={currency(financials.admin_commission)}
-                        subtext="Net income for platform"
+                        subtext="Platform's percentage share"
                         icon={Wallet}
                         color="text-emerald-600"
                         bg="bg-emerald-50"
+                    />
+                    <StatCard
+                        title="Service Fees"
+                        value={currency(financials.service_fees)}
+                        subtext="Booking.com / Airbnb fees"
+                        icon={CreditCard}
+                        color="text-sky-600"
+                        bg="bg-sky-50"
                     />
                     <StatCard
                         title="Owner Payout"

@@ -9,7 +9,6 @@ import {
     ArrowDownRight,
     Home,
     Clock,
-    User,
     ChevronRight,
     TrendingDown,
     LayoutDashboard,
@@ -228,7 +227,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                                             <Calendar className="w-5 h-5 text-white" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Bookings</p>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Bookings ({stats.ongoing_month_name})</p>
                                             <p className="text-2xl font-black">{stats.total_bookings}</p>
                                         </div>
                                     </div>
@@ -241,7 +240,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                                             <Clock className="w-5 h-5 text-white" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Currently In</p>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Currently Occupied Today</p>
                                             <p className="text-2xl font-black">{stats.active_stays}</p>
                                         </div>
                                     </div>
@@ -254,7 +253,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                                             <ArrowUpRight className="w-5 h-5 text-white" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Upcoming</p>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Upcoming ({stats.ongoing_month_name})</p>
                                             <p className="text-2xl font-black">{stats.upcoming_stays}</p>
                                         </div>
                                     </div>
@@ -284,7 +283,7 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    <th className="px-8 py-5 border-b border-slate-50">Guest & Apartment</th>
+                                    <th className="px-8 py-5 border-b border-slate-50">Apartment</th>
                                     <th className="px-8 py-5 border-b border-slate-50">Stay Period</th>
                                     <th className="px-8 py-5 border-b border-slate-50">Earnings</th>
                                     <th className="px-8 py-5 border-b border-slate-50">Status</th>
@@ -296,11 +295,10 @@ export default function Dashboard({ auth, stats, recentBookings, monthlyRevenue 
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-3">
                                                 <div className="p-2 bg-slate-100 text-slate-400 rounded-lg group-hover:bg-brand-orange group-hover:text-white transition-all">
-                                                    <User className="w-4 h-4" />
+                                                    <Home className="w-4 h-4" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-slate-900 leading-tight">{booking.guest_name}</p>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{booking.apartment_name}</p>
+                                                    <p className="font-black text-slate-900 leading-tight">{booking.apartment_name}</p>
                                                 </div>
                                             </div>
                                         </td>

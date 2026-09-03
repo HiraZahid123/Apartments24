@@ -18,7 +18,8 @@ import {
     Info,
     Filter,
     Clock,
-    CheckCircle2
+    CheckCircle2,
+    CreditCard
 } from 'lucide-react';
 
 export default function Index({ auth, financials, bookings, expenses, filters, filterOptions }) {
@@ -219,7 +220,7 @@ export default function Index({ auth, financials, bookings, expenses, filters, f
                 </div>
 
                 {/* Key Financial Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
                     <StatCard
                         title={`Net Revenue (${financials.owner_revenue_percentage}%)`}
                         value={financials.net_revenue}
@@ -253,12 +254,20 @@ export default function Index({ auth, financials, bookings, expenses, filters, f
                         bg="bg-indigo-50"
                     />
                     <StatCard
-                        title="Admin Commission"
+                        title="Admin Management Fee"
                         value={financials.admin_commission}
-                        subtext="Platform commission share"
+                        subtext={`Admin's ${100 - financials.owner_revenue_percentage}% share`}
                         icon={FileText}
                         color="text-slate-600"
                         bg="bg-slate-100"
+                    />
+                    <StatCard
+                        title="Service Fees"
+                        value={financials.service_fees}
+                        subtext="Booking.com / Airbnb platform fees"
+                        icon={CreditCard}
+                        color="text-sky-600"
+                        bg="bg-sky-50"
                     />
                 </div>
 
@@ -305,6 +314,7 @@ export default function Index({ auth, financials, bookings, expenses, filters, f
                                             <th className="px-8 py-5 border-b border-slate-100">Stay Dates</th>
                                             <th className="px-8 py-5 border-b border-slate-100">Check-out Date</th>
                                             <th className="px-8 py-5 border-b border-slate-100 text-right">Gross Price</th>
+                                            <th className="px-8 py-5 border-b border-slate-100 text-right">Service Fee</th>
                                             <th className="px-8 py-5 border-b border-slate-100 text-right">Admin Fee</th>
                                             <th className="px-8 py-5 border-b border-slate-100 text-right">Net Revenue (Payout)</th>
                                             <th className="px-8 py-5 border-b border-slate-100 text-center">Status</th>
@@ -347,6 +357,11 @@ export default function Index({ auth, financials, bookings, expenses, filters, f
                                                 <td className="px-8 py-6 text-right">
                                                     <p className="text-sm font-black text-slate-900 font-mono">
                                                         {currency(booking.total_price)}
+                                                    </p>
+                                                </td>
+                                                <td className="px-8 py-6 text-right">
+                                                    <p className="text-xs font-bold text-slate-500 font-mono">
+                                                        {currency(booking.service_fee)}
                                                     </p>
                                                 </td>
                                                 <td className="px-8 py-6 text-right">

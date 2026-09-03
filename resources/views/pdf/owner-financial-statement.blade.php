@@ -55,7 +55,7 @@
         }
         .summary-card {
             display: table-cell;
-            width: 20%;
+            width: 16.66%;
             padding: 12px;
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -155,8 +155,12 @@
             <div class="card-value">€{{ number_format($financials['total_revenue'], 2) }}</div>
         </div>
         <div class="summary-card">
-            <div class="card-title">Admin Fee</div>
+            <div class="card-title">Admin Management Fee</div>
             <div class="card-value">€{{ number_format($financials['admin_commission'], 2) }}</div>
+        </div>
+        <div class="summary-card">
+            <div class="card-title">Service Fees</div>
+            <div class="card-value">€{{ number_format($financials['service_fees'], 2) }}</div>
         </div>
         <div class="summary-card" style="background-color: #fff7ed; border-color: #fed7aa;">
             <div class="card-title" style="color: #9a3412;">Net Revenue (Payout)</div>
@@ -184,21 +188,24 @@
                     <th>Check-out</th>
                     <th>Nights</th>
                     <th class="text-right">Gross Price</th>
-                    <th class="text-right">Admin Share</th>
+                    <th class="text-right">Service Fee</th>
+                    <th class="text-right">Admin Fee</th>
                     <th class="text-right">Net Revenue</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($bookings as $booking)
+                @php($breakdown = \App\Support\BookingFinancials::breakdown($booking))
                 <tr>
                     <td><strong>{{ $booking->apartment->name ?? 'N/A' }}</strong></td>
                     <td>{{ $booking->guest_name }}</td>
                     <td>{{ $booking->check_in_date ? $booking->check_in_date->format('d M Y') : 'N/A' }}</td>
                     <td><strong>{{ $booking->check_out_date ? $booking->check_out_date->format('d M Y') : 'N/A' }}</strong></td>
                     <td>{{ $booking->check_in_date && $booking->check_out_date ? max(1, $booking->check_in_date->diffInDays($booking->check_out_date)) : 1 }}</td>
-                    <td class="text-right">€{{ number_format($booking->total_price, 2) }}</td>
-                    <td class="text-right">€{{ number_format($booking->total_price - $booking->net_revenue, 2) }}</td>
-                    <td class="text-right" style="color: #c2410c; font-weight: bold;">€{{ number_format($booking->net_revenue, 2) }}</td>
+                    <td class="text-right">€{{ number_format($breakdown['total_price'], 2) }}</td>
+                    <td class="text-right">€{{ number_format($breakdown['service_fee'], 2) }}</td>
+                    <td class="text-right">€{{ number_format($breakdown['admin_management_fee'], 2) }}</td>
+                    <td class="text-right" style="color: #c2410c; font-weight: bold;">€{{ number_format($breakdown['net_revenue'], 2) }}</td>
                 </tr>
                 @endforeach
             </tbody>

@@ -59,6 +59,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [\App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
 
+    // Financial Records (per owner/apartment/group breakdown, mirrors the owner view)
+    Route::get('/financial-records', [\App\Http\Controllers\Admin\FinancialRecordController::class, 'index'])->name('financial-records.index');
+    Route::get('/financial-records/export', [\App\Http\Controllers\Admin\FinancialRecordController::class, 'export'])->name('financial-records.export');
+
     // Impersonation
     Route::post('/impersonate/take/{user}', [App\Http\Controllers\Admin\ImpersonationController::class, 'take'])->name('impersonate.take');
 

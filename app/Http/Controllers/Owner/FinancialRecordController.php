@@ -7,6 +7,7 @@ use App\Models\Apartment;
 use App\Models\ApartmentGroup;
 use App\Models\Booking;
 use App\Models\Expense;
+use App\Support\BookingFinancials;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -70,9 +71,11 @@ class FinancialRecordController extends Controller
             ->orderBy('check_out_date', 'asc')
             ->get();
 
-        $totalRevenue = (float) $bookings->sum('total_price');
-        $netRevenue = (float) $bookings->sum('net_revenue');
-        $adminCommission = $totalRevenue - $netRevenue;
+        $totals = BookingFinancials::sumForCollection($bookings);
+        $totalRevenue = $totals['total_revenue'];
+        $netRevenue = $totals['net_revenue'];
+        $adminCommission = $totals['admin_commission'];
+        $serviceFees = $totals['service_fees'];
 
         // 2. Fetch Expenses
         $expensesQuery = Expense::with(['apartment', 'apartmentGroup', 'apartments'])
@@ -111,9 +114,11 @@ class FinancialRecordController extends Controller
 
         // Map bookings for view
         $formattedBookings = $bookings->map(function ($booking) {
-            $nights = $booking->check_in_date && $booking->check_out_date 
-                ? max(1, $booking->check_in_date->diffInDays($booking->check_out_date)) 
+            $nights = $booking->check_in_date && $booking->check_out_date
+                ? max(1, $booking->check_in_date->diffInDays($booking->check_out_date))
                 : 0;
+
+            $breakdown = BookingFinancials::breakdown($booking);
 
             return [
                 'id' => $booking->id,
@@ -122,10 +127,10 @@ class FinancialRecordController extends Controller
                 'check_in' => $booking->check_in_date ? $booking->check_in_date->format('d M Y') : 'N/A',
                 'check_out' => $booking->check_out_date ? $booking->check_out_date->format('d M Y') : 'N/A',
                 'nights' => $nights,
-                'total_price' => (float) $booking->total_price,
-                'service_fee' => (float) ($booking->service_fee ?? 0),
-                'admin_commission' => (float) ($booking->total_price - $booking->net_revenue),
-                'net_revenue' => (float) $booking->net_revenue,
+                'total_price' => $breakdown['total_price'],
+                'service_fee' => $breakdown['service_fee'],
+                'admin_commission' => $breakdown['admin_management_fee'],
+                'net_revenue' => $breakdown['net_revenue'],
                 'status' => $booking->status,
             ];
         });
@@ -175,6 +180,7 @@ class FinancialRecordController extends Controller
                 'entity_label' => $entityLabel,
                 'total_revenue' => $totalRevenue,
                 'admin_commission' => $adminCommission,
+                'service_fees' => $serviceFees,
                 'net_revenue' => $netRevenue,
                 'total_expenses' => $totalExpenses,
                 'net_earnings' => $netEarnings,
@@ -242,9 +248,11 @@ class FinancialRecordController extends Controller
             ->orderBy('check_out_date', 'asc')
             ->get();
 
-        $totalRevenue = (float) $bookings->sum('total_price');
-        $netRevenue = (float) $bookings->sum('net_revenue');
-        $adminCommission = $totalRevenue - $netRevenue;
+        $totals = BookingFinancials::sumForCollection($bookings);
+        $totalRevenue = $totals['total_revenue'];
+        $netRevenue = $totals['net_revenue'];
+        $adminCommission = $totals['admin_commission'];
+        $serviceFees = $totals['service_fees'];
 
         // Fetch expenses
         $expensesQuery = Expense::with(['apartment', 'apartmentGroup', 'apartments'])
@@ -299,6 +307,7 @@ class FinancialRecordController extends Controller
             'financials' => [
                 'total_revenue' => $totalRevenue,
                 'admin_commission' => $adminCommission,
+                'service_fees' => $serviceFees,
                 'owner_share' => $netRevenue,
                 'expenses' => $totalExpenses,
                 'net_earnings' => $netEarnings,

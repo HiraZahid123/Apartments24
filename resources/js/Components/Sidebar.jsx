@@ -91,6 +91,12 @@ export default function Sidebar() {
                             active={route().current('admin.reports.*')}
                         />
                         <SidebarItem
+                            href={route('admin.financial-records.index')}
+                            icon={FileText}
+                            label="Financial Records"
+                            active={route().current('admin.financial-records.*')}
+                        />
+                        <SidebarItem
                             href={route('admin.bookings.index')}
                             icon={Calendar}
                             label="Bookings"

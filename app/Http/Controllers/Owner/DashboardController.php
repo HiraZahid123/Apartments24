@@ -73,14 +73,21 @@ class DashboardController extends Controller
         }
 
         // Statistics
-        $totalBookings = Booking::whereIn('apartment_id', $apartmentIds)->count();
+        $totalBookings = Booking::whereIn('apartment_id', $apartmentIds)
+            ->where('status', '!=', 'cancelled')
+            ->whereMonth('check_in_date', now()->month)
+            ->whereYear('check_in_date', now()->year)
+            ->count();
+
         $activeStays = Booking::whereIn('apartment_id', $apartmentIds)
             ->where('status', 'checked_in')
             ->count();
-        
+
         $upcomingStays = Booking::whereIn('apartment_id', $apartmentIds)
             ->where('check_in_date', '>=', now())
             ->where('status', 'confirmed')
+            ->whereMonth('check_in_date', now()->month)
+            ->whereYear('check_in_date', now()->year)
             ->count();
 
         // Recent Bookings
@@ -92,7 +99,6 @@ class DashboardController extends Controller
             ->map(function ($booking) {
                 return [
                     'id' => $booking->id,
-                    'guest_name' => $booking->guest_name,
                     'apartment_name' => $booking->apartment->name,
                     'check_in' => $booking->check_in_date->format('d M'),
                     'check_out' => $booking->check_out_date->format('d M'),

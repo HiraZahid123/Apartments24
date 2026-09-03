@@ -12,7 +12,8 @@ import {
     Mail,
     Filter,
     CalendarDays,
-    X
+    X,
+    FileText
 } from 'lucide-react';
 
 export default function Dashboard({ bookings, stats, filters }) {
@@ -75,7 +76,18 @@ export default function Dashboard({ bookings, stats, filters }) {
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="font-extrabold text-3xl text-slate-900 tracking-tight leading-none italic uppercase">Admin Control</h2>}
+            header={
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h2 className="font-extrabold text-3xl text-slate-900 tracking-tight leading-none italic uppercase">Admin Control</h2>
+                    <Link
+                        href={route('admin.financial-records.index')}
+                        className="inline-flex items-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-slate-800 transition-all shadow-md active:scale-95 self-start sm:self-auto"
+                    >
+                        <FileText className="w-4 h-4 text-brand-orange" />
+                        Financial Records
+                    </Link>
+                </div>
+            }
         >
             <Head title="Admin Dashboard | Apartments24" />
 

@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Models\Booking;
 use App\Models\Expense;
 use App\Models\Apartment;
+use App\Support\BookingFinancials;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -28,10 +29,11 @@ class ReportController extends Controller
             ->whereYear('check_out_date', $year)
             ->get();
 
-        $monthlyTotalRevenue = $monthlyBookings->sum('total_price');
-        
-        $monthlyOwnerShare = $monthlyBookings->sum('net_revenue');
-        $monthlyAdminCommission = $monthlyTotalRevenue - $monthlyOwnerShare;
+        $monthlyTotals = BookingFinancials::sumForCollection($monthlyBookings);
+        $monthlyTotalRevenue = $monthlyTotals['total_revenue'];
+        $monthlyOwnerShare = $monthlyTotals['net_revenue'];
+        $monthlyAdminCommission = $monthlyTotals['admin_commission'];
+        $monthlyServiceFees = $monthlyTotals['service_fees'];
 
         // 3. Expenses
         $monthlyExpenses = Expense::whereMonth('date', $month)
@@ -48,15 +50,13 @@ class ReportController extends Controller
                 ->whereYear('check_out_date', $year)
                 ->get();
 
-            $total = $monthBookings->sum('total_price');
-            $ownerShare = $monthBookings->sum('net_revenue');
-            $adminShare = $total - $ownerShare;
+            $trendTotals = BookingFinancials::sumForCollection($monthBookings);
 
             $monthlyTrend[] = [
                 'month' => $monthStart->format('M'),
-                'total_revenue' => $total,
-                'admin_commission' => $adminShare,
-                'owner_payout' => $ownerShare
+                'total_revenue' => $trendTotals['total_revenue'],
+                'admin_commission' => $trendTotals['admin_commission'],
+                'owner_payout' => $trendTotals['net_revenue']
             ];
         }
 
@@ -86,6 +86,7 @@ class ReportController extends Controller
                 'month' => Carbon::createFromDate($year, $month, 1)->format('F'),
                 'total_revenue' => $monthlyTotalRevenue,
                 'admin_commission' => $monthlyAdminCommission,
+                'service_fees' => $monthlyServiceFees,
                 'owner_share' => $monthlyOwnerShare,
                 'expenses' => $monthlyExpenses, // Owner expenses
             ],
@@ -109,9 +110,11 @@ class ReportController extends Controller
             ->whereYear('check_out_date', $year)
             ->get();
 
-        $totalRevenue = $bookings->sum('total_price');
-        $ownerShare = $bookings->sum('net_revenue');
-        $adminCommission = $totalRevenue - $ownerShare;
+        $totals = BookingFinancials::sumForCollection($bookings);
+        $totalRevenue = $totals['total_revenue'];
+        $ownerShare = $totals['net_revenue'];
+        $adminCommission = $totals['admin_commission'];
+        $serviceFees = $totals['service_fees'];
 
         $expenses = Expense::with(['apartment', 'apartmentGroup', 'apartments'])
             ->whereMonth('date', $month)
@@ -126,6 +129,7 @@ class ReportController extends Controller
             'financials' => [
                 'total_revenue' => $totalRevenue,
                 'admin_commission' => $adminCommission,
+                'service_fees' => $serviceFees,
                 'owner_share' => $ownerShare,
                 'expenses' => $totalExpenses,
             ],
