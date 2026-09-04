@@ -11,7 +11,6 @@ import {
     TrendingUp,
     Building2,
     Layers,
-    User,
     ArrowRight,
     ArrowUpRight,
     FileText,
@@ -310,7 +309,7 @@ export default function Index({ auth, financials, bookings, expenses, filters, f
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50/30">
-                                            <th className="px-8 py-5 border-b border-slate-100">Guest & Apartment</th>
+                                            <th className="px-8 py-5 border-b border-slate-100">Apartment</th>
                                             <th className="px-8 py-5 border-b border-slate-100">Stay Dates</th>
                                             <th className="px-8 py-5 border-b border-slate-100">Check-out Date</th>
                                             <th className="px-8 py-5 border-b border-slate-100 text-right">Gross Price</th>
@@ -326,16 +325,11 @@ export default function Index({ auth, financials, bookings, expenses, filters, f
                                                 <td className="px-8 py-6">
                                                     <div className="flex items-center gap-3">
                                                         <div className="p-2 bg-slate-100 text-slate-400 rounded-lg group-hover:bg-brand-orange group-hover:text-white transition-all">
-                                                            <User className="w-4 h-4" />
+                                                            <Building2 className="w-4 h-4" />
                                                         </div>
-                                                        <div>
-                                                            <p className="font-black text-slate-900 leading-tight">
-                                                                {booking.guest_name}
-                                                            </p>
-                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                                                                {booking.apartment_name}
-                                                            </p>
-                                                        </div>
+                                                        <p className="font-black text-slate-900 leading-tight">
+                                                            {booking.apartment_name}
+                                                        </p>
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-6">

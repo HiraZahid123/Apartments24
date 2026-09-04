@@ -183,7 +183,6 @@
             <thead>
                 <tr>
                     <th>Apartment</th>
-                    <th>Guest</th>
                     <th>Check-in</th>
                     <th>Check-out</th>
                     <th>Nights</th>
@@ -198,7 +197,6 @@
                 @php($breakdown = \App\Support\BookingFinancials::breakdown($booking))
                 <tr>
                     <td><strong>{{ $booking->apartment->name ?? 'N/A' }}</strong></td>
-                    <td>{{ $booking->guest_name }}</td>
                     <td>{{ $booking->check_in_date ? $booking->check_in_date->format('d M Y') : 'N/A' }}</td>
                     <td><strong>{{ $booking->check_out_date ? $booking->check_out_date->format('d M Y') : 'N/A' }}</strong></td>
                     <td>{{ $booking->check_in_date && $booking->check_out_date ? max(1, $booking->check_in_date->diffInDays($booking->check_out_date)) : 1 }}</td>

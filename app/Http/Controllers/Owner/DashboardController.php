@@ -79,13 +79,20 @@ class DashboardController extends Controller
             ->whereYear('check_in_date', now()->year)
             ->count();
 
+        // Currently Occupied: any non-cancelled reservation whose stay period covers today,
+        // regardless of whether the guest has submitted the check-in form yet.
         $activeStays = Booking::whereIn('apartment_id', $apartmentIds)
-            ->where('status', 'checked_in')
+            ->where('status', '!=', 'cancelled')
+            ->whereDate('check_in_date', '<=', now())
+            ->whereDate('check_out_date', '>=', now())
             ->count();
 
+        // Upcoming: all of this month's non-cancelled bookings with a check-in date after today.
+        // Submitting the check-in form early flips status to "checked_in" but must not remove
+        // the booking from this count, so status is intentionally not filtered here.
         $upcomingStays = Booking::whereIn('apartment_id', $apartmentIds)
-            ->where('check_in_date', '>=', now())
-            ->where('status', 'confirmed')
+            ->where('status', '!=', 'cancelled')
+            ->whereDate('check_in_date', '>', now())
             ->whereMonth('check_in_date', now()->month)
             ->whereYear('check_in_date', now()->year)
             ->count();

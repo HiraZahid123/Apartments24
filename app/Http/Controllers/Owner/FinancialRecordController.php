@@ -122,7 +122,6 @@ class FinancialRecordController extends Controller
 
             return [
                 'id' => $booking->id,
-                'guest_name' => $booking->guest_name,
                 'apartment_name' => $booking->apartment->name ?? 'N/A',
                 'check_in' => $booking->check_in_date ? $booking->check_in_date->format('d M Y') : 'N/A',
                 'check_out' => $booking->check_out_date ? $booking->check_out_date->format('d M Y') : 'N/A',
