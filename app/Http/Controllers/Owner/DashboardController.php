@@ -81,10 +81,11 @@ class DashboardController extends Controller
 
         // Currently Occupied: any non-cancelled reservation whose stay period covers today,
         // regardless of whether the guest has submitted the check-in form yet.
+        // Check-out day itself is excluded — the guest is checking out, not occupying, today.
         $activeStays = Booking::whereIn('apartment_id', $apartmentIds)
             ->where('status', '!=', 'cancelled')
             ->whereDate('check_in_date', '<=', now())
-            ->whereDate('check_out_date', '>=', now())
+            ->whereDate('check_out_date', '>', now())
             ->count();
 
         // Upcoming: all of this month's non-cancelled bookings with a check-in date after today.
